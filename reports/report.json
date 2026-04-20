@@ -1,0 +1,319 @@
+{
+  "generated_at": "2026-04-20 17:42:58.800144",
+  "queries_run": [
+    {
+      "query": "Q7 \u2014 Ranking Query: Rank inventors (window functions)",
+      "run_at": "2026-04-20 17:34:56.896990",
+      "row_count": 50,
+      "results": [
+        {
+          "inventor_id": "fl:sh_ln:yamazaki-59",
+          "name": "Shunpei Yamazaki",
+          "country": "JP",
+          "patent_count": 6787,
+          "global_rank": 1,
+          "country_rank": 1,
+          "pct_of_total": 0.0282
+        },
+        {
+          "inventor_id": "fl:ki_ln:silverbrook-1",
+          "name": "Kia Silverbrook",
+          "country": "AU",
+          "patent_count": 4778,
+          "global_rank": 2,
+          "country_rank": 1,
+          "pct_of_total": 0.0199
+        },
+        {
+          "inventor_id": "fl:ta_ln:luo-5",
+          "name": "Tao Luo",
+          "country": "US",
+          "patent_count": 4490,
+          "global_rank": 3,
+          "country_rank": 1,
+          "pct_of_total": 0.0187
+        },
+        {
+          "inventor_id": "fl:jo_ln:ive-4",
+          "name": "Jonathan P. Ive",
+          "country": "US",
+          "patent_count": 2947,
+          "global_rank": 4,
+          "country_rank": 2,
+          "pct_of_total": 0.0123
+        },
+        {
+          "inventor_id": "fl:ju_ln:li-39",
+          "name": "Junyi Li",
+          "country": "US",
+          "patent_count": 2881,
+          "global_rank": 5,
+          "country_rank": 3,
+          "pct_of_total": 0.012
+        },
+        {
+          "inventor_id": "fl:ka_ln:cheng-84",
+          "name": "Kangguo Cheng",
+          "country": "US",
+          "patent_count": 2835,
+          "global_rank": 6,
+          "country_rank": 4,
+          "pct_of_total": 0.0118
+        },
+        {
+          "inventor_id": "fl:fr_ln:shelton-6",
+          "name": "Frederick E. Shelton, IV",
+          "country": "US",
+          "patent_count": 2723,
+          "global_rank": 7,
+          "country_rank": 5,
+          "pct_of_total": 0.0113
+        },
+        {
+          "inventor_id": "fl:pe_ln:gaal-1",
+          "name": "Peter Gaal",
+          "country": "US",
+          "patent_count": 2554,
+          "global_rank": 8,
+          "country_rank": 6,
+          "pct_of_total": 0.0106
+        },
+        {
+          "inventor_id": "fl:du_ln:kerr-1",
+          "name": "Duncan Robert Kerr",
+          "country": "US",
+          "patent_count": 2534,
+          "global_rank": 9,
+          "country_rank": 7,
+          "pct_of_total": 0.0105
+        },
+        {
+          "inventor_id": "fl:ba_ln:andre-6",
+          "name": "Bartley K. Andre",
+          "country": "US",
+          "patent_count": 2478,
+          "global_rank": 10,
+          "country_rank": 8,
+          "pct_of_total": 0.0103
+        },
+        {
+          "inventor_id": "fl:ri_ln:howarth-2",
+          "name": "Richard P. Howarth",
+          "country": "US",
+          "patent_count": 2402,
+          "global_rank": 11,
+          "country_rank": 9,
+          "pct_of_total": 0.01
+        },
+        {
+          "inventor_id": "fl:wa_ln:chen-107",
+          "name": "Wanshi Chen",
+          "country": "US",
+          "patent_count": 2342,
+          "global_rank": 12,
+          "country_rank": 10,
+          "pct_of_total": 0.0097
+        },
+        {
+          "inventor_id": "fl:eu_ln:whang-8",
+          "name": "Eugene Antony Whang",
+          "country": "US",
+          "patent_count": 2248,
+          "global_rank": 13,
+          "country_rank": 11,
+          "pct_of_total": 0.0094
+        },
+        {
+          "inventor_id": "fl:xi_ln:zhang-212",
+          "name": "Xiaoxia Zhang",
+          "country": "US",
+          "patent_count": 2158,
+          "global_rank": 14,
+          "country_rank": 12,
+          "pct_of_total": 0.009
+        },
+        {
+          "inventor_id": "fl:pe_ln:russellclarke-2",
+          "name": "Peter Russell-Clarke",
+          "country": "US",
+          "patent_count": 2012,
+          "global_rank": 15,
+          "country_rank": 13,
+          "pct_of_total": 0.0084
+        },
+        {
+          "inventor_id": "fl:ri_ln:zorkendorfer-1",
+          "name": "Rico Z\u00f6rkend\u00f6rfer",
+          "country": "US",
+          "patent_count": 1993,
+          "global_rank": 16,
+          "country_rank": 14,
+          "pct_of_total": 0.0083
+        },
+        {
+          "inventor_id": "fl:ch_ln:yu-100",
+          "name": "Chen-Hua Yu",
+          "country": "TW",
+          "patent_count": 1981,
+          "global_rank": 17,
+          "country_rank": 1,
+          "pct_of_total": 0.0082
+        },
+        {
+          "inventor_id": "fl:lo_ln:wood-12",
+          "name": "Lowell L. Wood, JR.",
+          "country": "US",
+          "patent_count": 1974,
+          "global_rank": 18,
+          "country_rank": 15,
+          "pct_of_total": 0.0082
+        },
+        {
+          "inventor_id": "fl:ch_ln:stringer-4",
+          "name": "Christopher J. Stringer",
+          "country": "US",
+          "patent_count": 1918,
+          "global_rank": 19,
+          "country_rank": 16,
+          "pct_of_total": 0.008
+        },
+        {
+          "inventor_id": "fl:es_ln:dinan-2",
+          "name": "Esmael Hejazi Dinan",
+          "country": "US",
+          "patent_count": 1915,
+          "global_rank": 20,
+          "country_rank": 17,
+          "pct_of_total": 0.008
+        }
+      ]
+    },
+    {
+      "query": "Q1 \u2014 Top Inventors: Who has the most patents?",
+      "run_at": "2026-04-20 17:42:58.798779",
+      "row_count": 20,
+      "results": [
+        {
+          "inventor_id": "fl:sh_ln:yamazaki-59",
+          "name": "Shunpei Yamazaki",
+          "country": "JP",
+          "patent_count": 6787
+        },
+        {
+          "inventor_id": "fl:ki_ln:silverbrook-1",
+          "name": "Kia Silverbrook",
+          "country": "AU",
+          "patent_count": 4778
+        },
+        {
+          "inventor_id": "fl:ta_ln:luo-5",
+          "name": "Tao Luo",
+          "country": "US",
+          "patent_count": 4490
+        },
+        {
+          "inventor_id": "fl:jo_ln:ive-4",
+          "name": "Jonathan P. Ive",
+          "country": "US",
+          "patent_count": 2947
+        },
+        {
+          "inventor_id": "fl:ju_ln:li-39",
+          "name": "Junyi Li",
+          "country": "US",
+          "patent_count": 2881
+        },
+        {
+          "inventor_id": "fl:ka_ln:cheng-84",
+          "name": "Kangguo Cheng",
+          "country": "US",
+          "patent_count": 2835
+        },
+        {
+          "inventor_id": "fl:fr_ln:shelton-6",
+          "name": "Frederick E. Shelton, IV",
+          "country": "US",
+          "patent_count": 2723
+        },
+        {
+          "inventor_id": "fl:pe_ln:gaal-1",
+          "name": "Peter Gaal",
+          "country": "US",
+          "patent_count": 2554
+        },
+        {
+          "inventor_id": "fl:du_ln:kerr-1",
+          "name": "Duncan Robert Kerr",
+          "country": "US",
+          "patent_count": 2534
+        },
+        {
+          "inventor_id": "fl:ba_ln:andre-6",
+          "name": "Bartley K. Andre",
+          "country": "US",
+          "patent_count": 2478
+        },
+        {
+          "inventor_id": "fl:ri_ln:howarth-2",
+          "name": "Richard P. Howarth",
+          "country": "US",
+          "patent_count": 2402
+        },
+        {
+          "inventor_id": "fl:wa_ln:chen-107",
+          "name": "Wanshi Chen",
+          "country": "US",
+          "patent_count": 2342
+        },
+        {
+          "inventor_id": "fl:eu_ln:whang-8",
+          "name": "Eugene Antony Whang",
+          "country": "US",
+          "patent_count": 2248
+        },
+        {
+          "inventor_id": "fl:xi_ln:zhang-212",
+          "name": "Xiaoxia Zhang",
+          "country": "US",
+          "patent_count": 2158
+        },
+        {
+          "inventor_id": "fl:pe_ln:russellclarke-2",
+          "name": "Peter Russell-Clarke",
+          "country": "US",
+          "patent_count": 2012
+        },
+        {
+          "inventor_id": "fl:ri_ln:zorkendorfer-1",
+          "name": "Rico Z\u00f6rkend\u00f6rfer",
+          "country": "US",
+          "patent_count": 1993
+        },
+        {
+          "inventor_id": "fl:ch_ln:yu-100",
+          "name": "Chen-Hua Yu",
+          "country": "TW",
+          "patent_count": 1981
+        },
+        {
+          "inventor_id": "fl:lo_ln:wood-12",
+          "name": "Lowell L. Wood, JR.",
+          "country": "US",
+          "patent_count": 1974
+        },
+        {
+          "inventor_id": "fl:ch_ln:stringer-4",
+          "name": "Christopher J. Stringer",
+          "country": "US",
+          "patent_count": 1918
+        },
+        {
+          "inventor_id": "fl:es_ln:dinan-2",
+          "name": "Esmael Hejazi Dinan",
+          "country": "US",
+          "patent_count": 1915
+        }
+      ]
+    }
+  ]
+}
