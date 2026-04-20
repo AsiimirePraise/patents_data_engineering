@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-20 17:42:58.800144",
+  "generated_at": "2026-04-20 18:18:14.902516",
   "queries_run": [
     {
       "query": "Q7 \u2014 Ranking Query: Rank inventors (window functions)",
@@ -312,6 +312,601 @@
           "name": "Esmael Hejazi Dinan",
           "country": "US",
           "patent_count": 1915
+        }
+      ]
+    },
+    {
+      "query": "Q2 \u2014 Top Companies: Which companies own the most?",
+      "run_at": "2026-04-20 17:53:26.609993",
+      "row_count": 20,
+      "results": [
+        {
+          "company_id": "533e0469-baac-46b7-9576-669db08092eb",
+          "name": "SAMSUNG DISPLAY CO., LTD.",
+          "patent_count": 174536
+        },
+        {
+          "company_id": "29b8f534-149e-443c-b76b-3c4a222da89c",
+          "name": "International Business Machines Corporation",
+          "patent_count": 164081
+        },
+        {
+          "company_id": "dfdf1f1a-8f22-41dc-a7f0-855bde20ca67",
+          "name": "CANON KABUSHIKI KAISHA",
+          "patent_count": 91328
+        },
+        {
+          "company_id": "55bc7465-2823-418d-9835-41d555c610a6",
+          "name": "SONY GROUP CORPORATION",
+          "patent_count": 62908
+        },
+        {
+          "company_id": "5952964e-63c6-4284-9012-0fdd0643f715",
+          "name": "Fujitsu Limited",
+          "patent_count": 56341
+        },
+        {
+          "company_id": "4ef2b9c8-d3e7-40d6-ac53-8694d8fe890f",
+          "name": "Kabushiki Kaisha Toshiba",
+          "patent_count": 53604
+        },
+        {
+          "company_id": "55715b8e-9037-47c9-8e27-a2acf13d6047",
+          "name": "Intel Corporation",
+          "patent_count": 53218
+        },
+        {
+          "company_id": "b904f566-62d6-44a5-8689-7b5c5a3a1a19",
+          "name": "General Electric Company",
+          "patent_count": 52040
+        },
+        {
+          "company_id": "906da649-dd98-4eac-a78c-d5dc3cc385b1",
+          "name": "LG ELECTRONICS INC.",
+          "patent_count": 50000
+        },
+        {
+          "company_id": "93f8c962-7a18-45c0-b192-7a141f9a8b6c",
+          "name": "HITACHI, LTD.",
+          "patent_count": 46073
+        },
+        {
+          "company_id": "74c11be2-20ec-49fe-ac26-d839d375bd32",
+          "name": "MITSUBISHI ELECTRIC CORPORATION",
+          "patent_count": 45738
+        },
+        {
+          "company_id": "f03635c8-6b6c-4f2b-bb6c-b52678f56aae",
+          "name": "QUALCOMM Incorporated",
+          "patent_count": 41723
+        },
+        {
+          "company_id": "88c962da-6df3-4f86-85ba-14c24c3cb600",
+          "name": "Taiwan Semiconductor Manufacturing Company, Ltd.",
+          "patent_count": 40871
+        },
+        {
+          "company_id": "87bbd77e-54e0-4d95-9c1b-7843963c09eb",
+          "name": "TOYOTA JIDOSHA KABUSHIKI KAISHA",
+          "patent_count": 39413
+        },
+        {
+          "company_id": "38cff6e0-fc52-4faf-9fa9-b72912600dee",
+          "name": "Apple Inc.",
+          "patent_count": 39060
+        },
+        {
+          "company_id": "77b0e539-7552-487c-8171-df9127f7fa66",
+          "name": "SUMITOMO ELECTRIC INDUSTRIES, LTD.",
+          "patent_count": 38355
+        },
+        {
+          "company_id": "e26f6502-4416-481e-b15a-e69178b15dfc",
+          "name": "Micron Technology, Inc.",
+          "patent_count": 38112
+        },
+        {
+          "company_id": "9971439c-aa8f-4cf2-b787-3b80dc992cfa",
+          "name": "NEC CORPORATION",
+          "patent_count": 36208
+        },
+        {
+          "company_id": "877b4262-7552-45e3-adc3-c484b3095cf3",
+          "name": "SEIKO EPSON CORPORATION",
+          "patent_count": 33863
+        },
+        {
+          "company_id": "7fd570bb-8d88-4ad9-832b-532add7b7500",
+          "name": "HONDA MOTOR CO., LTD.",
+          "patent_count": 32295
+        }
+      ]
+    },
+    {
+      "query": "Q3 \u2014 Countries: Which produce the most patents?",
+      "run_at": "2026-04-20 18:02:30.394326",
+      "row_count": 20,
+      "results": [
+        {
+          "country": "US",
+          "patent_count": 5152235
+        },
+        {
+          "country": "JP",
+          "patent_count": 1596388
+        },
+        {
+          "country": "DE",
+          "patent_count": 632808
+        },
+        {
+          "country": "CN",
+          "patent_count": 503914
+        },
+        {
+          "country": "KR",
+          "patent_count": 441206
+        },
+        {
+          "country": "TW",
+          "patent_count": 326572
+        },
+        {
+          "country": "GB",
+          "patent_count": 295191
+        },
+        {
+          "country": "CA",
+          "patent_count": 268412
+        },
+        {
+          "country": "FR",
+          "patent_count": 253366
+        },
+        {
+          "country": "CH",
+          "patent_count": 122076
+        },
+        {
+          "country": "IN",
+          "patent_count": 119490
+        },
+        {
+          "country": "IT",
+          "patent_count": 113452
+        },
+        {
+          "country": "NL",
+          "patent_count": 101524
+        },
+        {
+          "country": "IL",
+          "patent_count": 99312
+        },
+        {
+          "country": "SE",
+          "patent_count": 96538
+        },
+        {
+          "country": "AU",
+          "patent_count": 75082
+        },
+        {
+          "country": "BE",
+          "patent_count": 52435
+        },
+        {
+          "country": "AT",
+          "patent_count": 49161
+        },
+        {
+          "country": "FI",
+          "patent_count": 45722
+        },
+        {
+          "country": "DK",
+          "patent_count": 37995
+        }
+      ]
+    },
+    {
+      "query": "Q4 \u2014 Trends Over Time: Patents created each year?",
+      "run_at": "2026-04-20 18:03:35.239984",
+      "row_count": 50,
+      "results": [
+        {
+          "year": 1976,
+          "patent_count": 70941
+        },
+        {
+          "year": 1977,
+          "patent_count": 69820
+        },
+        {
+          "year": 1978,
+          "patent_count": 70586
+        },
+        {
+          "year": 1979,
+          "patent_count": 52484
+        },
+        {
+          "year": 1980,
+          "patent_count": 66212
+        },
+        {
+          "year": 1981,
+          "patent_count": 71112
+        },
+        {
+          "year": 1982,
+          "patent_count": 63292
+        },
+        {
+          "year": 1983,
+          "patent_count": 62019
+        },
+        {
+          "year": 1984,
+          "patent_count": 72689
+        },
+        {
+          "year": 1985,
+          "patent_count": 77276
+        },
+        {
+          "year": 1986,
+          "patent_count": 77050
+        },
+        {
+          "year": 1987,
+          "patent_count": 89591
+        },
+        {
+          "year": 1988,
+          "patent_count": 84449
+        },
+        {
+          "year": 1989,
+          "patent_count": 102719
+        },
+        {
+          "year": 1990,
+          "patent_count": 99275
+        },
+        {
+          "year": 1991,
+          "patent_count": 106891
+        },
+        {
+          "year": 1992,
+          "patent_count": 107540
+        },
+        {
+          "year": 1993,
+          "patent_count": 109933
+        },
+        {
+          "year": 1994,
+          "patent_count": 113723
+        },
+        {
+          "year": 1995,
+          "patent_count": 113954
+        }
+      ]
+    },
+    {
+      "query": "Q5 \u2014 JOIN Query: Patents with inventors and companies",
+      "run_at": "2026-04-20 18:07:22.793364",
+      "row_count": 100,
+      "results": [
+        {
+          "patent_id": "11694774",
+          "title": "Platform for perpetual clinical collaboration and innovation with patient communication using anonymized electronic health record data, clinical, and patient reported outcomes and data",
+          "filing_date": "2025-06-17",
+          "year": 2025,
+          "inventor_name": "Walid Fawzi Nasrallah",
+          "inventor_country": "US",
+          "company_name": "AVIDENT HEALTH, LLC"
+        },
+        {
+          "patent_id": "11694774",
+          "title": "Platform for perpetual clinical collaboration and innovation with patient communication using anonymized electronic health record data, clinical, and patient reported outcomes and data",
+          "filing_date": "2025-06-17",
+          "year": 2025,
+          "inventor_name": "Tan Lu",
+          "inventor_country": "US",
+          "company_name": "AVIDENT HEALTH, LLC"
+        },
+        {
+          "patent_id": "12185648",
+          "title": "Earth conditioning apparatus, systems and methods",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "Timothy Gordon PANNELL",
+          "inventor_country": "AU",
+          "company_name": "ROCKS GONE PTY LTD"
+        },
+        {
+          "patent_id": "12185649",
+          "title": "Compact, extensible, track laying, agricultural tractor",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "David Haynes",
+          "inventor_country": "GB",
+          "company_name": NaN
+        },
+        {
+          "patent_id": "12185650",
+          "title": "System and method for controlling the operation of an agricultural implement based on compaction layer position",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "James W. Henry",
+          "inventor_country": "CA",
+          "company_name": "CNH Industrial Canada, Ltd."
+        },
+        {
+          "patent_id": "12185651",
+          "title": "System and method for adjusting swath lines for a work vehicle",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "Navneet Gulati",
+          "inventor_country": "US",
+          "company_name": NaN
+        },
+        {
+          "patent_id": "12185651",
+          "title": "System and method for adjusting swath lines for a work vehicle",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "Phillip Duane Dix",
+          "inventor_country": "US",
+          "company_name": NaN
+        },
+        {
+          "patent_id": "12185651",
+          "title": "System and method for adjusting swath lines for a work vehicle",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "Aditya Singh",
+          "inventor_country": "US",
+          "company_name": NaN
+        },
+        {
+          "patent_id": "12185651",
+          "title": "System and method for adjusting swath lines for a work vehicle",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "Daniel Geiyer",
+          "inventor_country": "US",
+          "company_name": NaN
+        },
+        {
+          "patent_id": "12185652",
+          "title": "System for automatically rotating steering wheel of agricultural machine",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "Seung Rak Son",
+          "inventor_country": "KR",
+          "company_name": "GINT CO., LTD."
+        },
+        {
+          "patent_id": "12185652",
+          "title": "System for automatically rotating steering wheel of agricultural machine",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "Yeon Tae Kim",
+          "inventor_country": "KR",
+          "company_name": "GINT CO., LTD."
+        },
+        {
+          "patent_id": "12185652",
+          "title": "System for automatically rotating steering wheel of agricultural machine",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "Yong Hyeon Kim",
+          "inventor_country": "KR",
+          "company_name": "GINT CO., LTD."
+        },
+        {
+          "patent_id": "12185653",
+          "title": "Mounting apparatus for agricultural header sensors",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "Cory Douglas Hunt",
+          "inventor_country": "US",
+          "company_name": "CNH Industrial America LLC"
+        },
+        {
+          "patent_id": "12185654",
+          "title": "Speed control of implements during transitions of settings of agricultural parameters",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "Ryan Allgaier",
+          "inventor_country": "US",
+          "company_name": "Precision Planting LLC"
+        },
+        {
+          "patent_id": "12185655",
+          "title": "Method for micro-ridge mixed-sowing cultivation of dryland crops",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "Yugang Liang",
+          "inventor_country": "CN",
+          "company_name": "Hunan Agriculture University"
+        },
+        {
+          "patent_id": "12185655",
+          "title": "Method for micro-ridge mixed-sowing cultivation of dryland crops",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "Xiangsheng Gong",
+          "inventor_country": "CN",
+          "company_name": "Hunan Agriculture University"
+        },
+        {
+          "patent_id": "12185655",
+          "title": "Method for micro-ridge mixed-sowing cultivation of dryland crops",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "Zhiqiang FU",
+          "inventor_country": "CN",
+          "company_name": "Hunan Agriculture University"
+        },
+        {
+          "patent_id": "12185655",
+          "title": "Method for micro-ridge mixed-sowing cultivation of dryland crops",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "Jingyi Li",
+          "inventor_country": "US",
+          "company_name": "Hunan Agriculture University"
+        },
+        {
+          "patent_id": "12185655",
+          "title": "Method for micro-ridge mixed-sowing cultivation of dryland crops",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "Xiangjie Meng",
+          "inventor_country": "CN",
+          "company_name": "Hunan Agriculture University"
+        },
+        {
+          "patent_id": "12185655",
+          "title": "Method for micro-ridge mixed-sowing cultivation of dryland crops",
+          "filing_date": "2025-01-07",
+          "year": 2025,
+          "inventor_name": "Can Chen",
+          "inventor_country": "CN",
+          "company_name": "Hunan Agriculture University"
+        }
+      ]
+    },
+    {
+      "query": "Q6 \u2014 CTE Query: Top 3 companies per country",
+      "run_at": "2026-04-20 18:18:14.900803",
+      "row_count": 679,
+      "results": [
+        {
+          "country": "AD",
+          "company_name": "Unknown Organization",
+          "patent_count": 10,
+          "rnk": 1
+        },
+        {
+          "country": "AD",
+          "company_name": "ZITRO IP S.AR.L.",
+          "patent_count": 6,
+          "rnk": 2
+        },
+        {
+          "country": "AD",
+          "company_name": "WGA WATER GLOBAL ACCESS, SL",
+          "patent_count": 5,
+          "rnk": 3
+        },
+        {
+          "country": "AE",
+          "company_name": "UNITED ARAB EMIRATES UNIVERSITY",
+          "patent_count": 245,
+          "rnk": 1
+        },
+        {
+          "country": "AE",
+          "company_name": "Khalifa University of Science and Technology",
+          "patent_count": 150,
+          "rnk": 2
+        },
+        {
+          "country": "AE",
+          "company_name": "Schlumberger Technology Corporation",
+          "patent_count": 76,
+          "rnk": 3
+        },
+        {
+          "country": "AF",
+          "company_name": "Taiwan Semiconductor Manufacturing Company, Ltd.",
+          "patent_count": 20,
+          "rnk": 1
+        },
+        {
+          "country": "AF",
+          "company_name": "TELEFONAKTIEBOLAGET LM ERICSSON (PUBL)",
+          "patent_count": 20,
+          "rnk": 1
+        },
+        {
+          "country": "AF",
+          "company_name": "Infineon Technologies AG",
+          "patent_count": 5,
+          "rnk": 3
+        },
+        {
+          "country": "AG",
+          "company_name": "Technologies IP, LLC",
+          "patent_count": 7,
+          "rnk": 1
+        },
+        {
+          "country": "AG",
+          "company_name": "The Pampered Chef, Ltd.",
+          "patent_count": 2,
+          "rnk": 2
+        },
+        {
+          "country": "AG",
+          "company_name": "Heftitec SA",
+          "patent_count": 2,
+          "rnk": 2
+        },
+        {
+          "country": "AI",
+          "company_name": "HELENA LABORATORIES CORPORATION",
+          "patent_count": 3,
+          "rnk": 1
+        },
+        {
+          "country": "AI",
+          "company_name": "G.M.S. Global Maritime Services Ltd.",
+          "patent_count": 3,
+          "rnk": 1
+        },
+        {
+          "country": "AI",
+          "company_name": "Chicony Electronics Co., Ltd.",
+          "patent_count": 1,
+          "rnk": 3
+        },
+        {
+          "country": "AI",
+          "company_name": "Offshore Navigation Limited ; G.M.S. Global Maritime Services Ltd.",
+          "patent_count": 1,
+          "rnk": 3
+        },
+        {
+          "country": "AI",
+          "company_name": "Offshore Navigation Limited",
+          "patent_count": 1,
+          "rnk": 3
+        },
+        {
+          "country": "AI",
+          "company_name": "Ladar Limited",
+          "patent_count": 1,
+          "rnk": 3
+        },
+        {
+          "country": "AI",
+          "company_name": "Array Medical, Inc.",
+          "patent_count": 1,
+          "rnk": 3
+        },
+        {
+          "country": "AI",
+          "company_name": "Marine and Remote Sensing Solutions Ltd.",
+          "patent_count": 1,
+          "rnk": 3
         }
       ]
     }
