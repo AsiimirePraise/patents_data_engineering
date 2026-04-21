@@ -1,9 +1,6 @@
 """
 dashboard.py — Streamlit Patent Intelligence Dashboard
 --------------------------------------------------------
-Run with:  streamlit run dashboard.py
-
-Requires: streamlit, pandas, sqlalchemy, matplotlib, pillow
 
 Tabs:
   1. Overview      — key stats + top 5 summaries
@@ -91,7 +88,7 @@ def run_sql(sql):
 
 # Header
 
-st.title("🔬 Global Patent Intelligence Dashboard")
+st.title("Global Patent Intelligence Dashboard")
 st.markdown("Exploring **9.4 million patents** from PatentsView — inventors, companies, countries & trends.")
 st.divider()
 
@@ -100,10 +97,10 @@ st.divider()
 # Tabs
 
 tab1, tab2, tab3, tab4 = st.tabs([
-    "📊 Overview",
-    "🔍 Query Results",
-    "📈 Visualisations",
-    "🧪 Advanced Analysis",
+    "Overview",
+    "Query Results",
+    "Visualisations",
+    "Advanced Analysis",
 ])
 
 
@@ -131,25 +128,25 @@ with tab1:
     col_a, col_b, col_c = st.columns(3)
 
     with col_a:
-        st.subheader("🏆 Top 5 Inventors")
+        st.subheader("Top 5 Inventors")
         df_inv = run_query(1).head(5)[["name", "country", "patent_count"]]
         df_inv.index = range(1, len(df_inv) + 1)
         st.dataframe(df_inv, use_container_width=True)
 
     with col_b:
-        st.subheader("🏢 Top 5 Companies")
+        st.subheader("Top 5 Companies")
         df_com = run_query(2).head(5)[["name", "patent_count"]]
         df_com.index = range(1, len(df_com) + 1)
         st.dataframe(df_com, use_container_width=True)
 
     with col_c:
-        st.subheader("🌍 Top 5 Countries")
+        st.subheader("Top 5 Countries")
         df_cou = run_query(3).head(5)[["country", "patent_count"]]
         df_cou.index = range(1, len(df_cou) + 1)
         st.dataframe(df_cou, use_container_width=True)
 
     st.divider()
-    st.subheader("📅 Patents Per Year")
+    st.subheader("Patents Per Year")
     df_trend = run_query(4)
     st.line_chart(df_trend.set_index("year")["patent_count"])
 
@@ -299,7 +296,7 @@ with tab4:
     st.divider()
 
     # ── JSON Report Viewer ──
-    st.subheader("📄 JSON Report Viewer")
+    st.subheader("JSON Report Viewer")
     json_path = os.path.join(REPORTS_DIR, "report.json")
     if os.path.exists(json_path):
         with open(json_path, "r") as f:
