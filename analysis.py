@@ -311,3 +311,13 @@ print(f"\n{'=' * 60}")
 print("  Advanced analysis complete!")
 print(f"  Charts saved → {OUTPUT_DIR}/")
 print(f"  CSVs saved   → {REPORTS_DIR}/")
+
+
+f5_raw = pd.read_sql("""
+    SELECT column_name
+    FROM information_schema.columns
+    WHERE table_name='inventors'
+    ORDER BY ordinal_position
+""", engine)
+
+print(f'f5_raw columns: {f5_raw["column_name"].tolist()}')
