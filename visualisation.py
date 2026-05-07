@@ -1,16 +1,30 @@
 """
-visualizations.py — Fetches data from PostgreSQL and saves 8 PNG charts
-to the reports/charts/ folder.
+visualizations.py - Diagnostic Patent Intelligence Charts
+-----------------------------------------------------------
+Creates meaningful diagnostic visualizations 
+  - Inventor weight distribution (weighted by contribution)
+  - Patent concentration metrics (Gini coefficient)
+  - Quality indicators (abstract length)
+  - Team collaboration patterns
+  - Impact trends (temporal analysis)
+
+Logging: Tracks execution time and system metrics
 """
 
 import os
 import sys
 import pandas as pd
+import numpy as np
 import matplotlib
 matplotlib.use('Agg')  
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from sqlalchemy import create_engine
+import time
+import psutil
+import logging
+from datetime import datetime
+import re
 
 
 # Config
@@ -18,6 +32,22 @@ from sqlalchemy import create_engine
 CONNECTION_STRING = "postgresql://postgres:root@localhost:5111/patents"
 OUTPUT_DIR = "reports/charts"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+# Logging setup
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("reports/visualisation.log"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
+# Track system metrics
+process = psutil.Process(os.getpid())
+start_time = time.time()
+start_memory = process.memory_info().rss / (1024 ** 3)  # GB
 
 # Consistent style
 plt.rcParams.update({
@@ -32,256 +62,314 @@ plt.rcParams.update({
 })
 
 
-print("  PATENT VISUALIZATIONS")
+logger.info("="*80)
+logger.info("DIAGNOSTIC VISUALIZATIONS — STARTING")
+logger.info("="*80)
+logger.info(f"Start Time: {datetime.now().isoformat()}")
+logger.info(f"Memory at start: {start_memory:.2f} GB")
+logger.info(f"CPU cores available: {psutil.cpu_count()}")
+
+print("  DIAGNOSTIC PATENT VISUALIZATIONS")
 
 print(f"  Connecting to database...")
 sys.stdout.flush()
 
 engine = create_engine(CONNECTION_STRING)
 print("  Connected.\n")
+logger.info("Database connected successfully")
 
+
+# Helper: Load SQL queries from file
+
+def load_query(query_name):
+    """
+    Load a named SQL query from queries.sql file.
+    Queries are marked with comments like -- VIZ_CHART_1_START and -- VIZ_CHART_1_END
+    """
+    sql_file = "queries.sql"
+    if not os.path.exists(sql_file):
+        logger.error(f"SQL file not found: {sql_file}")
+        return None
+    
+    with open(sql_file, 'r') as f:
+        content = f.read()
+    
+    # Extract query between markers
+    pattern = f"-- {query_name}_START\n(.*?)\n-- {query_name}_END"
+    match = re.search(pattern, content, re.DOTALL)
+    
+    if match:
+        query = match.group(1).strip()
+        return query
+    else:
+        logger.warning(f"Query not found: {query_name}")
+        return None
 
 
 # Helper: save figure
 
-def save(fig, filename):
+def save(fig, filename, chart_num):
+    """Save figure and log timing."""
     path = os.path.join(OUTPUT_DIR, filename)
+    
+    save_start = time.time()
     fig.savefig(path, dpi=150, bbox_inches="tight")
+    save_duration = time.time() - save_start
+    
     plt.close(fig)
-    print(f"  Saved → {path}")
+    
+    current_memory = process.memory_info().rss / (1024 ** 3)
+    cpu_percent = process.cpu_percent(interval=0.1)
+    
+    logger.info(f"[{chart_num}] Saved -> {path}")
+    logger.info(f"    Save time: {save_duration:.2f}s | Memory: {current_memory:.2f} GB | CPU: {cpu_percent:.1f}%")
+    print(f"  [{chart_num}] Saved -> {path}")
 
 
 
-# 1. Top 20 Countries by Patent Count
+# ============================================================================
+# DIAGNOSTIC VISUALIZATIONS 
+# ============================================================================
 
-print("[1/8] Top 20 Countries by Patent Count...")
-df1 = pd.read_sql("""
-    SELECT i.country, COUNT(DISTINCT r.patent_id) AS patent_count
-    FROM inventors i
-    JOIN relationships r ON i.inventor_id = r.inventor_id
-    WHERE i.country IS NOT NULL AND i.country != 'Unknown'
-    GROUP BY i.country
-    ORDER BY patent_count DESC
-    LIMIT 20
-""", engine)
+# 1. Inventor Weight Distribution — Top 20 by Patent Count
 
-fig, ax = plt.subplots(figsize=(12, 7))
-bars = ax.barh(df1["country"][::-1], df1["patent_count"][::-1], color="#4C72B0")
-ax.set_xlabel("Number of Patents")
-ax.set_title("Top 20 Countries by Patent Count", fontsize=14, fontweight="bold", pad=15)
-ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
-for bar in bars:
-    w = bar.get_width()
-    ax.text(w + max(df1["patent_count"]) * 0.005, bar.get_y() + bar.get_height() / 2,
-            f"{int(w):,}", va="center", fontsize=9)
-plt.tight_layout()
-save(fig, "01_top20_countries.png")
+print("\n[1/6] Inventor Weight Distribution (Top 20)...")
+logger.info("[1/6] Starting - Inventor Weight Distribution")
+chart_start = time.time()
 
-
-
-# 2. Top 20 Inventors by Patent Count
-
-print("[2/8] Top 20 Inventors by Patent Count...")
-df2 = pd.read_sql("""
-    SELECT i.name, i.country, COUNT(DISTINCT r.patent_id) AS patent_count
-    FROM inventors i
-    JOIN relationships r ON i.inventor_id = r.inventor_id
-    GROUP BY i.inventor_id, i.name, i.country
-    ORDER BY patent_count DESC
-    LIMIT 20
-""", engine)
-
-fig, ax = plt.subplots(figsize=(12, 7))
-colors = plt.cm.tab20.colors
-bars = ax.barh(df2["name"][::-1], df2["patent_count"][::-1],
-               color=[colors[i % 20] for i in range(len(df2))])
-ax.set_xlabel("Number of Patents")
-ax.set_title("Top 20 Inventors by Patent Count", fontsize=14, fontweight="bold", pad=15)
-ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
-for bar in bars:
-    w = bar.get_width()
-    ax.text(w + max(df2["patent_count"]) * 0.005, bar.get_y() + bar.get_height() / 2,
-            f"{int(w):,}", va="center", fontsize=9)
-plt.tight_layout()
-save(fig, "02_top20_inventors.png")
-
-
-
-# 3. Top 20 Companies by Patent Count
-
-print("[3/8] Top 20 Companies by Patent Count...")
-df3 = pd.read_sql("""
-    SELECT c.name, COUNT(DISTINCT r.patent_id) AS patent_count
-    FROM companies c
-    JOIN relationships r ON c.company_id = r.company_id
-    GROUP BY c.company_id, c.name
-    ORDER BY patent_count DESC
-    LIMIT 20
-""", engine)
-
-fig, ax = plt.subplots(figsize=(12, 7))
-bars = ax.barh(df3["name"][::-1], df3["patent_count"][::-1], color="#DD8452")
-ax.set_xlabel("Number of Patents")
-ax.set_title("Top 20 Companies by Patent Count", fontsize=14, fontweight="bold", pad=15)
-ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
-for bar in bars:
-    w = bar.get_width()
-    ax.text(w + max(df3["patent_count"]) * 0.005, bar.get_y() + bar.get_height() / 2,
-            f"{int(w):,}", va="center", fontsize=9)
-plt.tight_layout()
-save(fig, "03_top20_companies.png")
-
-
-
-# 4. Patents Created Per Year (Trend)
-
-print("[4/8] Patents Per Year Trend...")
-df4 = pd.read_sql("""
-    SELECT year, COUNT(*) AS patent_count
-    FROM patents
-    WHERE year IS NOT NULL
-    GROUP BY year
-    ORDER BY year ASC
-""", engine)
-
-fig, ax = plt.subplots(figsize=(14, 6))
-ax.plot(df4["year"], df4["patent_count"], color="#4C72B0", linewidth=2.5, marker="o", markersize=3)
-ax.fill_between(df4["year"], df4["patent_count"], alpha=0.15, color="#4C72B0")
-ax.set_xlabel("Year")
-ax.set_ylabel("Number of Patents")
-ax.set_title("Patents Granted Per Year (Trend Over Time)", fontsize=14, fontweight="bold", pad=15)
-ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
-plt.tight_layout()
-save(fig, "04_patents_per_year.png")
-
-
-
-# 5. Top 50 Inventors — Ranked with Window Function (colored by country)
-
-print("[5/8] Top 50 Inventors Ranked (Window Function)...")
-df5 = pd.read_sql("""
-    SELECT inventor_id, name, country, patent_count,
-           RANK() OVER (ORDER BY patent_count DESC) AS global_rank
-    FROM (
-        SELECT i.inventor_id, i.name, i.country,
-               COUNT(DISTINCT r.patent_id) AS patent_count
-        FROM inventors i
-        JOIN relationships r ON i.inventor_id = r.inventor_id
-        GROUP BY i.inventor_id, i.name, i.country
-    ) sub
-    ORDER BY global_rank
-    LIMIT 50
-""", engine)
-
-# Assign a color per country
-unique_countries = df5["country"].unique()
-color_map = {c: plt.cm.tab20.colors[i % 20] for i, c in enumerate(unique_countries)}
-bar_colors = df5["country"].map(color_map)
-
-fig, ax = plt.subplots(figsize=(14, 14))
-ax.barh(df5["name"][::-1], df5["patent_count"][::-1],
-        color=bar_colors[::-1].values)
-ax.set_xlabel("Number of Patents")
-ax.set_title("Top 50 Inventors — Global Rank (Colored by Country)",
-             fontsize=14, fontweight="bold", pad=15)
-ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
-
-# Legend for countries
-from matplotlib.patches import Patch
-legend_handles = [Patch(color=color_map[c], label=c) for c in unique_countries]
-ax.legend(handles=legend_handles, title="Country", loc="lower right",
-          fontsize=8, title_fontsize=9)
-plt.tight_layout()
-save(fig, "05_top50_inventors_ranked.png")
-
-
-
-# 6. Patent Growth Rate — Year over Year %
-
-print("[6/8] Year-over-Year Patent Growth Rate...")
-df6 = df4.copy()
-df6["growth_rate"] = df6["patent_count"].pct_change() * 100
-df6 = df6.dropna()
-
-fig, ax = plt.subplots(figsize=(14, 6))
-colors_bar = ["#2ecc71" if v >= 0 else "#e74c3c" for v in df6["growth_rate"]]
-ax.bar(df6["year"], df6["growth_rate"], color=colors_bar, width=0.8)
-ax.axhline(0, color="black", linewidth=0.8)
-ax.set_xlabel("Year")
-ax.set_ylabel("Growth Rate (%)")
-ax.set_title("Year-over-Year Patent Growth Rate (%)", fontsize=14, fontweight="bold", pad=15)
-ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{x:.1f}%"))
-plt.tight_layout()
-save(fig, "06_yoy_growth_rate.png")
-
-
-
-# 7. Top 10 Companies Share of Total Patents (Donut)
-
-print("[7/8] Top 10 Companies Share of Total Patents (Donut)...")
-df7 = pd.read_sql("""
-    SELECT c.name, COUNT(DISTINCT r.patent_id) AS patent_count
-    FROM companies c
-    JOIN relationships r ON c.company_id = r.company_id
-    GROUP BY c.company_id, c.name
-    ORDER BY patent_count DESC
-    LIMIT 10
-""", engine)
-
-total = pd.read_sql("SELECT COUNT(*) AS total FROM patents", engine)["total"][0]
-other = max(0, total - df7["patent_count"].sum())
-labels = df7["name"].tolist() + (["All Others"] if other > 0 else [])
-sizes  = df7["patent_count"].tolist() + ([other] if other > 0 else [])
+query_1 = load_query("VIZ_CHART_1")
+df1 = pd.read_sql(query_1, engine)
 
 fig, ax = plt.subplots(figsize=(12, 8))
-wedges, texts, autotexts = ax.pie(
-    sizes, labels=None, autopct="%1.1f%%",
-    startangle=140, pctdistance=0.82,
-    colors=list(plt.cm.tab20.colors[:len(labels)]),
-    wedgeprops=dict(width=0.5)
-)
-for at in autotexts:
-    at.set_fontsize(8)
-ax.legend(wedges, labels, title="Company", loc="center left",
-          bbox_to_anchor=(1, 0, 0.5, 1), fontsize=9)
-ax.set_title("Top 10 Companies Share of Total Patents",
-             fontsize=14, fontweight="bold", pad=15)
-plt.tight_layout()
-save(fig, "07_top10_companies_share.png")
+colors = plt.cm.RdYlGn(np.linspace(0.2, 0.8, len(df1)))
+bars = ax.barh(range(len(df1)), df1["patent_count"].values, color=colors, edgecolor='black', linewidth=1)
+
+ax.set_yticks(range(len(df1)))
+ax.set_yticklabels([f"{row['name'][:30]}" for _, row in df1.iterrows()], fontsize=9)
+ax.set_xlabel("Number of Patents (Weighted by Contribution)", fontsize=11, fontweight='bold')
+ax.set_title("Top 20 Inventors by Patent Weight", fontsize=13, fontweight='bold', pad=15)
+ax.invert_yaxis()
+
+# Add value labels
+for i, bar in enumerate(bars):
+    width = bar.get_width()
+    ax.text(width, bar.get_y() + bar.get_height()/2., f' {int(width):,}',
+            ha='left', va='center', fontweight='bold', fontsize=8)
+
+ax.grid(axis='x', alpha=0.3, linestyle='--')
+save(fig, "01_inventor_weight_top20.png", 1)
+logger.info(f"    Duration: {time.time() - chart_start:.2f}s | Rows: {len(df1)}")
 
 
 
-# 8. Top 10 Countries Share of Total Patents (Donut)
+# 2. Invention Concentration — Gini Coefficient (Lorenz Curve)
 
-print("[8/8] Top 10 Countries Share of Total Patents (Donut)...")
-df8 = pd.read_sql("""
-    SELECT i.country, COUNT(DISTINCT r.patent_id) AS patent_count
-    FROM inventors i
-    JOIN relationships r ON i.inventor_id = r.inventor_id
-    WHERE i.country IS NOT NULL AND i.country != 'Unknown'
-    GROUP BY i.country
-    ORDER BY patent_count DESC
-    LIMIT 10
-""", engine)
+print("[2/6] Invention Concentration (Gini Coefficient)...")
+logger.info("[2/6] Starting - Invention Concentration")
+chart_start = time.time()
 
-other_c  = max(0, total - df8["patent_count"].sum())
-labels_c = df8["country"].tolist() + (["All Others"] if other_c > 0 else [])
-sizes_c  = df8["patent_count"].tolist() + ([other_c] if other_c > 0 else [])
+query_2_main = load_query("VIZ_CHART_2_MAIN")
+df2 = pd.read_sql(query_2_main, engine)
 
-fig, ax = plt.subplots(figsize=(12, 8))
-wedges, texts, autotexts = ax.pie(
-    sizes_c, labels=None, autopct="%1.1f%%",
-    startangle=140, pctdistance=0.82,
-    colors=list(plt.cm.Set3.colors[:len(labels_c)]),
-    wedgeprops=dict(width=0.5)
-)
-for at in autotexts:
-    at.set_fontsize(8)
-ax.legend(wedges, labels_c, title="Country", loc="center left",
-          bbox_to_anchor=(1, 0, 0.5, 1), fontsize=9)
-ax.set_title("Top 10 Countries Share of Total Patents",
-             fontsize=14, fontweight="bold", pad=15)
-plt.tight_layout()
-save(fig, "08_top10_countries_share.png")
+# If assignee is empty, use inventor name instead
+if df2.empty or df2['assignee'].isna().all():
+    query_2_fallback = load_query("VIZ_CHART_2_FALLBACK")
+    df2 = pd.read_sql(query_2_fallback, engine)
 
-print(f"  All 8 charts saved to → {OUTPUT_DIR}/")
+df2 = df2.dropna(subset=['assignee']).sort_values('patent_count', ascending=False).reset_index(drop=True)
+
+# Calculate Lorenz curve
+df2['cumulative_patents'] = df2['patent_count'].cumsum()
+df2['cumulative_share'] = df2['cumulative_patents'] / df2['patent_count'].sum() * 100
+df2['inventor_rank'] = range(1, len(df2) + 1)
+df2['inventor_share'] = df2['inventor_rank'] / len(df2) * 100
+
+fig, ax = plt.subplots(figsize=(10, 7))
+ax.plot(df2['inventor_share'], df2['cumulative_share'], linewidth=2.5, color='#1f77b4', label='Actual')
+ax.plot([0, 100], [0, 100], linestyle='--', linewidth=2, color='red', label='Perfect Equality')
+ax.fill_between(df2['inventor_share'], df2['cumulative_share'], df2['inventor_share'], alpha=0.2, color='#1f77b4')
+
+ax.set_xlabel('% of Inventors (Ranked)', fontsize=11, fontweight='bold')
+ax.set_ylabel('% of Patents', fontsize=11, fontweight='bold')
+ax.set_title('Invention Concentration: Lorenz Curve (Gini Coefficient)', fontsize=13, fontweight='bold', pad=15)
+ax.legend(fontsize=10, loc='upper left')
+ax.grid(alpha=0.3, linestyle='--')
+
+# Calculate Gini
+x = df2['inventor_share'].values / 100
+y = df2['cumulative_share'].values / 100
+gini = 1 - 2 * np.trapezoid(y, x)
+
+ax.text(0.98, 0.05, f'Gini: {gini:.3f}\n(0=Equal, 1=Concentrated)',
+        transform=ax.transAxes, fontsize=10, verticalalignment='bottom',
+        horizontalalignment='right', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+
+save(fig, "02_invention_concentration_gini.png", 2)
+logger.info(f"    Duration: {time.time() - chart_start:.2f}s | Gini Coefficient: {gini:.3f}")
+
+
+
+# 3. Patent Quality Indicator — Abstract Length Distribution
+
+print("[3/6] Patent Quality Metrics (Abstract Length)...")
+logger.info("[3/6] Starting - Patent Quality Metrics")
+chart_start = time.time()
+
+query_3 = load_query("VIZ_CHART_3")
+df3 = pd.read_sql(query_3, engine)
+
+if df3.empty:
+    logger.warning("    No abstract data found - skipping quality chart")
+else:
+    # Bin abstract lengths
+    df3['length_bin'] = pd.cut(df3['abstract_length'], 
+                               bins=[0, 200, 500, 1000, 2000, 5000, 100000],
+                               labels=['Very Short\n(<200)', 'Short\n(200-500)', 'Medium\n(500-1K)', 
+                                      'Long\n(1-2K)', 'Very Long\n(2-5K)', 'Extreme\n(>5K)'])
+    
+    binned_df = df3.groupby('length_bin', observed=True)['count'].sum().reset_index()
+    
+    fig, ax = plt.subplots(figsize=(11, 6))
+    colors = plt.cm.RdYlGn(np.linspace(0.2, 0.8, len(binned_df)))
+    bars = ax.bar(range(len(binned_df)), binned_df['count'], color=colors, edgecolor='black', linewidth=1.2)
+    
+    ax.set_xticks(range(len(binned_df)))
+    ax.set_xticklabels(binned_df['length_bin'], fontsize=10)
+    ax.set_ylabel('Patent Count', fontsize=11, fontweight='bold')
+    ax.set_xlabel('Abstract Length', fontsize=11, fontweight='bold')
+    ax.set_title('Patent Quality Indicator: Abstract Length Distribution', fontsize=13, fontweight='bold', pad=15)
+    
+    for bar in bars:
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., height,
+                f'{int(height):,}',
+                ha='center', va='bottom', fontweight='bold', fontsize=9)
+    
+    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, p: f'{int(x/1000)}K' if x >= 1000 else int(x)))
+    ax.grid(axis='y', alpha=0.3, linestyle='--')
+    
+    save(fig, "03_patent_quality_abstract_length.png", 3)
+    logger.info(f"    Duration: {time.time() - chart_start:.2f}s | Abstracts analyzed: {len(df3)}")
+
+
+
+# 4. Team Collaboration Patterns — Inventor Count Distribution
+
+print("[4/6] Team Collaboration Patterns...")
+logger.info("[4/6] Starting - Team Collaboration Patterns")
+chart_start = time.time()
+
+query_4 = load_query("VIZ_CHART_4")
+df4 = pd.read_sql(query_4, engine)
+
+df4['team_size'] = pd.cut(df4['inventor_count'],
+                           bins=[0, 1, 3, 5, 10, 1000],
+                           labels=['Solo\n(1)', 'Small\n(2-3)', 'Medium\n(4-5)', 'Large\n(6-10)', 'Massive\n(10+)'])
+
+team_stats = df4.groupby('team_size', observed=True).size().reset_index(name='patent_count')
+
+fig, ax = plt.subplots(figsize=(11, 6))
+colors = ['#2ca02c', '#1f77b4', '#ff7f0e', '#d62728', '#9467bd']
+wedges, texts, autotexts = ax.pie(team_stats['patent_count'],
+                                    labels=team_stats['team_size'],
+                                    autopct='%1.1f%%',
+                                    colors=colors,
+                                    startangle=90,
+                                    textprops={'fontsize': 10, 'fontweight': 'bold'})
+
+ax.set_title('Patent Invention Team Composition (Collaboration Patterns)', fontsize=13, fontweight='bold', pad=15)
+
+save(fig, "04_team_collaboration_patterns.png", 4)
+logger.info(f"    Duration: {time.time() - chart_start:.2f}s | Patents: {len(df4)}")
+
+
+
+# 5. Inventor Type Analysis — Corporate vs. Individual
+
+print("[5/6] Inventor Type Distribution...")
+logger.info("[5/6] Starting - Inventor Type Distribution")
+chart_start = time.time()
+
+try:
+    query_5 = load_query("VIZ_CHART_5")
+    df5 = pd.read_sql(query_5, engine)
+    
+    fig, ax = plt.subplots(figsize=(10, 6))
+    colors = ['#1f77b4', '#ff7f0e']
+    bars = ax.bar(df5['inventor_type'], df5['patent_count'], color=colors, edgecolor='black', linewidth=1.5)
+    
+    ax.set_ylabel('Number of Patents', fontsize=12, fontweight='bold')
+    ax.set_xlabel('Inventor Type', fontsize=12, fontweight='bold')
+    ax.set_title('Patent Distribution: Corporate vs. Individual Inventors', 
+                 fontsize=13, fontweight='bold', pad=15)
+    
+    for bar in bars:
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., height,
+                f'{int(height):,}',
+                ha='center', va='bottom', fontweight='bold', fontsize=11)
+    
+    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, p: f'{int(x/1000)}K' if x >= 1000 else int(x)))
+    ax.grid(axis='y', alpha=0.3, linestyle='--')
+    
+    save(fig, "05_inventor_type_distribution.png", 5)
+    logger.info(f"    Duration: {time.time() - chart_start:.2f}s")
+except Exception as e:
+    logger.warning(f"    Could not create inventor type chart: {e}")
+
+
+
+# 6. Impact Trends — Patents per Year
+
+print("[6/6] Impact Trends (Patents per Year)...")
+logger.info("[6/6] Starting - Impact Trends")
+chart_start = time.time()
+
+query_6 = load_query("VIZ_CHART_6")
+df6 = pd.read_sql(query_6, engine)
+
+if df6.empty:
+    logger.warning("    No patent date data found")
+else:
+    df6['decade_label'] = df6['decade'].astype(int).astype(str) + '0s'
+    
+    fig, ax = plt.subplots(figsize=(12, 6))
+    colors = plt.cm.viridis(np.linspace(0.2, 0.9, len(df6)))
+    bars = ax.bar(df6['decade_label'], df6['patent_count'], color=colors, edgecolor='black', linewidth=1.2)
+    
+    ax.set_ylabel('Patent Count', fontsize=11, fontweight='bold')
+    ax.set_xlabel('Decade Filed', fontsize=11, fontweight='bold')
+    ax.set_title('Impact Trends: Patent Filing Over Decades', fontsize=13, fontweight='bold', pad=15)
+    
+    for bar in bars:
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., height,
+                f'{int(height):,}',
+                ha='center', va='bottom', fontweight='bold', fontsize=9)
+    
+    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, p: f'{int(x/1000)}K' if x >= 1000 else int(x)))
+    ax.grid(axis='y', alpha=0.3, linestyle='--')
+    plt.xticks(rotation=45)
+    
+    save(fig, "06_impact_trends_over_decades.png", 6)
+    logger.info(f"    Duration: {time.time() - chart_start:.2f}s")
+
+
+# Final logging summary
+end_time = time.time()
+end_memory = process.memory_info().rss / (1024 ** 3)
+total_duration = end_time - start_time
+memory_delta = end_memory - start_memory
+
+logger.info("="*80)
+logger.info("DIAGNOSTIC VISUALIZATIONS — COMPLETED")
+logger.info("="*80)
+logger.info(f"Total execution time: {total_duration:.2f}s")
+logger.info(f"Memory at end: {end_memory:.2f} GB (Δ {memory_delta:+.2f} GB)")
+logger.info(f"All 6 diagnostic charts saved to -> {OUTPUT_DIR}/")
+logger.info("="*80)
+
+print(f"\n  [OK] All 6 diagnostic charts saved!")
+print(f"  [TIME] Total time: {total_duration:.2f}s")
+print(f"  [MEMORY] Memory used: {memory_delta:+.2f} GB")
+print(f"  Charts location: {OUTPUT_DIR}/")
