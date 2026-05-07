@@ -1,9 +1,5 @@
 -- =============================================================================
 -- Global Patent Intelligence Data Pipeline
--- queries.sql — All 7 Required Queries
--- =============================================================================
-
-
 -- ----------------------------------------------------------------------------
 -- Q1: Top Inventors — Who has the most patents?
 -- ----------------------------------------------------------------------------
@@ -155,3 +151,82 @@ FROM (
 ORDER BY global_rank
 LIMIT 50;
 -- Q7_END
+
+
+-- =============================================================================
+-- DIAGNOSTIC VISUALIZATIONS 
+-- =============================================================================
+
+-- Chart 1: Inventor Weight Distribution (Top 20 by Patent Count)
+-- VIZ_CHART_1_START
+SELECT i.name, i.country, COUNT(DISTINCT r.patent_id) AS patent_count
+FROM inventors i
+JOIN relationships r ON i.inventor_id = r.inventor_id
+GROUP BY i.inventor_id, i.name, i.country
+ORDER BY patent_count DESC
+LIMIT 20;
+-- VIZ_CHART_1_END
+
+-- Chart 2: Invention Concentration 
+-- VIZ_CHART_2_MAIN_START
+SELECT c.name AS assignee, COUNT(DISTINCT r.patent_id) as patent_count
+FROM relationships r
+JOIN companies c ON r.company_id = c.company_id
+GROUP BY c.company_id, c.name
+ORDER BY patent_count DESC;
+-- VIZ_CHART_2_MAIN_END
+
+-- Chart 2: Invention Concentration (Gini Coefficient) 
+-- VIZ_CHART_2_FALLBACK_START
+SELECT i.name as assignee, COUNT(DISTINCT r.patent_id) as patent_count
+FROM inventors i
+JOIN relationships r ON i.inventor_id = r.inventor_id
+GROUP BY i.inventor_id, i.name
+ORDER BY patent_count DESC;
+-- VIZ_CHART_2_FALLBACK_END
+
+-- Chart 3: Patent Quality Indicator (Abstract Length Distribution)
+-- VIZ_CHART_3_START
+SELECT LENGTH(abstract) as abstract_length, COUNT(*) as count
+FROM patents
+WHERE abstract IS NOT NULL AND abstract != ''
+GROUP BY LENGTH(abstract)
+ORDER BY LENGTH(abstract);
+-- VIZ_CHART_3_END
+
+-- Chart 4: Team Collaboration Patterns (Inventor Count Distribution)
+-- VIZ_CHART_4_START
+SELECT patent_id, COUNT(DISTINCT inventor_id) as inventor_count
+FROM relationships
+GROUP BY patent_id;
+-- VIZ_CHART_4_END
+
+-- Chart 5: Inventor Type Analysis (Corporate vs. Individual)
+-- VIZ_CHART_5_START
+SELECT 
+    CASE 
+        WHEN name LIKE '%Inc%' OR name LIKE '%LLC%' OR name LIKE '%Corp%' 
+             OR name LIKE '%Ltd%' OR name LIKE '%Company%' THEN 'Corporate'
+        ELSE 'Individual'
+    END as inventor_type,
+    COUNT(DISTINCT patent_id) as patent_count
+FROM (
+    SELECT DISTINCT i.name, r.patent_id
+    FROM inventors i
+    JOIN relationships r ON i.inventor_id = r.inventor_id
+) sub
+GROUP BY CASE 
+    WHEN name LIKE '%Inc%' OR name LIKE '%LLC%' OR name LIKE '%Corp%' 
+         OR name LIKE '%Ltd%' OR name LIKE '%Company%' THEN 'Corporate'
+    ELSE 'Individual'
+END;
+-- VIZ_CHART_5_END
+
+-- Chart 6: Impact Trends (Patents per Decade)
+-- VIZ_CHART_6_START
+SELECT EXTRACT(DECADE FROM filing_date) as decade, COUNT(*) as patent_count
+FROM patents
+WHERE filing_date IS NOT NULL
+GROUP BY EXTRACT(DECADE FROM filing_date)
+ORDER BY decade;
+-- VIZ_CHART_6_END

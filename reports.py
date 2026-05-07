@@ -1,7 +1,6 @@
 """
 reports.py — Interactive Patent Intelligence Report
 -----------------------------------------------------
-
 Features:
   - Numbered menu for all 7 queries (loops until you exit)
   - Prints results to console after each selection
@@ -9,15 +8,41 @@ Features:
   - Option to export top_inventors.csv, top_companies.csv, country_trends.csv
   - Option to print a full console summary report
   - Auto-exports CSVs and prints summary on exit
+  
+Logging: Tracks query execution time and system metrics
 """
 
 import os
 import sys
 import json
 import pandas as pd
-from sqlalchemy import create_engine, text
+import time
+import psutil
+import logging
 from datetime import datetime
+from sqlalchemy import create_engine, text
 
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("reports/query_execution.log"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
+# Track metrics
+process = psutil.Process(os.getpid())
+start_time = time.time()
+start_memory = process.memory_info().rss / (1024 ** 3)
+
+logger.info("="*80)
+logger.info("QUERY EXECUTION & REPORTING — STARTING")
+logger.info("="*80)
+logger.info(f"Start time: {datetime.now().isoformat()}")
+logger.info(f"System: Memory: {start_memory:.2f} GB | CPU cores: {psutil.cpu_count()}")
 
 # Config
 
@@ -39,6 +64,7 @@ sys.stdout.flush()
 
 engine = create_engine(CONNECTION_STRING)
 print("  Connected.\n")
+logger.info("Database connected successfully")
 
 
 
@@ -95,10 +121,17 @@ def append_to_json(report, query_label, df):
 def run_query(q_number):
     sql = QUERIES.get(q_number)
     if not sql:
-        print(f"  Query Q{q_number} not found in {SQL_FILE}")
+        msg = f"Query Q{q_number} not found in {SQL_FILE}"
+        print(f"  {msg}")
+        logger.warning(msg)
         return None
+    
+    query_start = time.time()
     with engine.connect() as conn:
         df = pd.read_sql(text(sql), conn)
+    query_duration = time.time() - query_start
+    
+    logger.info(f"Query Q{q_number}: {query_duration:.3f}s | {len(df):,} rows | Throughput: {len(df)/query_duration:,.0f} rows/sec")
     return df
 
 
@@ -111,9 +144,11 @@ def display_result(label, df):
     
     if df is None or df.empty:
         print("  No results returned.")
+        logger.warning(f"{label}: No results")
     else:
         print(df.to_string(index=False))
         print(f"\n  → {len(df)} rows returned")
+        logger.info(f"{label}: {len(df)} rows displayed")
 
 
 
@@ -219,6 +254,24 @@ while True:
     if choice == "0":
         export_csvs()
         print_console_report()
+        
+        # Final logging summary
+        end_time = time.time()
+        end_memory = process.memory_info().rss / (1024 ** 3)
+        total_duration = end_time - start_time
+        memory_delta = end_memory - start_memory
+        
+        logger.info("="*80)
+        logger.info("QUERY EXECUTION & REPORTING — COMPLETED")
+        logger.info("="*80)
+        logger.info(f"Total execution time: {total_duration:.2f}s")
+        logger.info(f"Memory: {start_memory:.2f} GB → {end_memory:.2f} GB (Δ {memory_delta:+.2f} GB)")
+        logger.info(f"Reports: {JSON_FILE}")
+        logger.info("="*80)
+        
+        print("\n  Session complete!")
+        print(f"  ⏱️  Total time: {total_duration:.2f}s")
+        print(f"  💾 Memory: {memory_delta:+.2f} GB")
         print("\n  Goodbye!\n")
         break
 

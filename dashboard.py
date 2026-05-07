@@ -12,6 +12,7 @@ Tabs:
 import os
 import json
 import pandas as pd
+import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -20,6 +21,8 @@ from matplotlib.patches import Patch
 from sqlalchemy import create_engine, text
 from PIL import Image
 import streamlit as st
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 # Config
@@ -85,6 +88,40 @@ def run_sql(sql):
         return pd.read_sql(sql, conn)
 
 
+@st.cache_resource
+def build_nlp_search_engine():
+    """Build TF-IDF search engine for patent abstracts."""
+    try:
+        query = "SELECT patent_id, abstract FROM patents WHERE abstract IS NOT NULL AND LENGTH(abstract) > 10 LIMIT 50000"
+        df = run_sql(query)
+        
+        if df.empty:
+            return None
+        
+        df['abstract'] = df['abstract'].fillna('').astype(str)
+        
+        vectorizer = TfidfVectorizer(
+            max_features=3000,
+            min_df=2,
+            max_df=0.8,
+            ngram_range=(1, 2),
+            stop_words='english',
+            lowercase=True
+        )
+        
+        tfidf_matrix = vectorizer.fit_transform(df['abstract'])
+        
+        return {
+            'vectorizer': vectorizer,
+            'tfidf_matrix': tfidf_matrix,
+            'patent_ids': df['patent_id'].values,
+            'abstracts': df['abstract'].values,
+            'df': df
+        }
+    except Exception as e:
+        st.error(f"NLP engine error: {e}")
+        return None
+
 
 # Header
 
@@ -92,12 +129,15 @@ st.title("Global Patent Intelligence Dashboard")
 st.markdown("Exploring **9.4 million patents** from PatentsView — inventors, companies, countries & trends.")
 st.divider()
 
+# Initialize NLP engine in background
+nlp_engine = build_nlp_search_engine()
 
 
 # Tabs
 
-tab1, tab2, tab3, tab4 = st.tabs([
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "Overview",
+    "NLP Abstract Search",
     "Query Results",
     "Visualisations",
     "Advanced Analysis",
@@ -152,9 +192,84 @@ with tab1:
 
 
 
-# TAB 2: QUERY RESULTS
+# TAB 2: NLP ABSTRACT SEARCH
 
 with tab2:
+    st.header("NLP-Powered Abstract Search")
+    st.markdown("Find patents using **semantic similarity** — powered by TF-IDF vectorization.")
+    
+    if nlp_engine is None:
+        st.error("❌ NLP search engine not initialized. Abstracts may not be available.")
+    else:
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            search_query = st.text_input(
+                "Enter search query:",
+                placeholder="e.g., 'machine learning', 'blockchain', 'artificial intelligence'"
+            )
+        with col2:
+            top_k = st.number_input("Top Results:", value=10, min_value=1, max_value=50, step=1)
+        
+        if search_query:
+            with st.spinner("Searching through abstracts..."):
+                # Vectorize query
+                query_vector = nlp_engine['vectorizer'].transform([search_query])
+                
+                # Compute similarities
+                similarities = cosine_similarity(query_vector, nlp_engine['tfidf_matrix']).flatten()
+                
+                # Get top results
+                top_indices = np.argsort(similarities)[::-1][:top_k]
+                
+                results = []
+                for idx in top_indices:
+                    score = float(similarities[idx])
+                    if score > 0.05:
+                        results.append({
+                            'Patent ID': nlp_engine['patent_ids'][idx],
+                            'Relevance Score': round(score, 4)
+                        })
+                
+                if results:
+                    st.markdown(f"**Found {len(results)} Relevant Patents**")
+                    results_df = pd.DataFrame(results)
+                    st.dataframe(
+                        results_df,
+                        use_container_width=True,
+                        hide_index=True,
+                        column_config={
+                            "Patent ID": st.column_config.TextColumn(width="large"),
+                            "Relevance Score": st.column_config.ProgressColumn(
+                                "Relevance Score",
+                                min_value=0.0,
+                                max_value=1.0,
+                                format="%.4f"
+                            )
+                        }
+                    )
+                    
+                    st.divider()
+                    
+                    if st.button("View Full Abstracts"):
+                        st.markdown("### Patent Abstracts (First 5 Results)")
+                        for idx, result in enumerate(results[:5], 1):
+                            patent_id = result['Patent ID']
+                            score = result['Relevance Score']
+                            abstract_row = nlp_engine['df'][nlp_engine['df']['patent_id'] == patent_id]
+                            if not abstract_row.empty:
+                                with st.expander(f"#{idx} — Patent {patent_id} (Relevance: {score:.4f})"):
+                                    abstract_text = abstract_row['abstract'].values[0]
+                                    st.markdown(f"{abstract_text}")
+                else:
+                    st.info("No relevant results found. Try different keywords!")
+        else:
+            st.info("💡 Enter a search query above to find patents by abstract content.")
+
+
+
+# TAB 3: QUERY RESULTS
+
+with tab3:
     st.header("Query Results")
     st.markdown("Select a query to run and explore the results.")
 
@@ -186,9 +301,9 @@ with tab2:
 
 
 
-# TAB 3: VISUALISATIONS
+# TAB 4: VISUALISATIONS
 
-with tab3:
+with tab4:
     st.header("Visualisations")
     st.markdown("8 charts generated from the patent database.")
 
@@ -217,9 +332,9 @@ with tab3:
 
 
 
-# TAB 4: ADVANCED ANALYSIS
+# TAB 5: ADVANCED ANALYSIS
 
-with tab4:
+with tab5:
     st.header("Advanced Analysis")
     st.markdown("Deeper insights beyond the 7 required queries.")
 
