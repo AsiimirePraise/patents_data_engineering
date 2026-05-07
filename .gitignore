@@ -2,3 +2,5 @@
 *.csv
 .venv/
 venv/
+patents_dump.sql
+*.db
