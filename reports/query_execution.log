@@ -1,0 +1,14 @@
+2026-05-09 10:16:40,493 - INFO - ================================================================================
+2026-05-09 10:16:40,494 - INFO - QUERY EXECUTION & REPORTING — STARTING
+2026-05-09 10:16:40,495 - INFO - ================================================================================
+2026-05-09 10:16:40,496 - INFO - Start time: 2026-05-09T10:16:40.495997
+2026-05-09 10:16:40,496 - INFO - System: Memory: 0.09 GB | CPU cores: 4
+2026-05-09 10:16:40,662 - INFO - Database connected successfully
+2026-05-09 10:31:50,585 - INFO - Query Q1: 903.690s | 20 rows | Throughput: 0 rows/sec
+2026-05-09 10:31:50,591 - INFO - Q1 — Top Inventors: Who has the most patents?: 20 rows displayed
+2026-05-09 10:54:35,662 - INFO - Query Q2: 528.539s | 20 rows | Throughput: 0 rows/sec
+2026-05-09 10:54:35,669 - INFO - Q2 — Top Companies: Which companies own the most?: 20 rows displayed
+2026-05-09 11:05:29,527 - INFO - Query Q3: 0.022s | 0 rows | Throughput: 0 rows/sec
+2026-05-09 11:05:29,528 - WARNING - Q3 — Countries: Which produce the most patents?: No results
+2026-05-09 11:05:44,105 - INFO - Query Q4: 0.007s | 0 rows | Throughput: 0 rows/sec
+2026-05-09 11:05:44,105 - WARNING - Q4 — Trends Over Time: Patents created each year?: No results

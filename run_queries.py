@@ -206,20 +206,58 @@ def main():
     total_rows    = sum(r for r, _ in summary.values())
     cpu_end, ram_end = snapshot()
 
-    log.info("=" * 72)
-    log.info("PIPELINE COMPLETE — SUMMARY")
-    log.info("=" * 72)
+    # Calculate total CSV file size (GB)
+    csv_files = ["clean_patents.csv", "clean_inventors.csv", "clean_companies.csv", "clean_relationships.csv"]
+    total_csv_size_gb = sum(
+        os.path.getsize(os.path.join(DATA_DIR, f)) for f in csv_files 
+        if os.path.exists(os.path.join(DATA_DIR, f))
+    ) / 1e9
+
+    # Query PostgreSQL for database size
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(sa_text(
+                "SELECT pg_database_size('patents') AS db_size"
+            ))
+            db_size_bytes = result.scalar()
+            db_size_gb = db_size_bytes / 1e9 if db_size_bytes else 0
+    except Exception as e:
+        log.warning(f"Could not determine database size: {e}")
+        db_size_gb = 0
+
+    # Calculate overall throughput
+    overall_rps = total_rows / total_elapsed if total_elapsed > 0 else 0
+
+    log.info("=" * 80)
+    log.info("PIPELINE COMPLETE — PERFORMANCE SUMMARY")
+    log.info("=" * 80)
+    log.info("")
+    log.info("PER-TABLE SUMMARY:")
     for tbl, (r, s) in summary.items():
         rps = r / s if s > 0 else 0
-        log.info(f"  {tbl:<20}: {r:>10,} rows | {s:>7.1f}s | {rps:>10,.0f} rows/sec")
-    log.info(f"  {'TOTAL':<20}: {total_rows:>10,} rows | {total_elapsed:>7.1f}s")
-    log.info(f"  Final CPU : {cpu_end:.1f}%  |  Final RAM: {ram_end:.1f}%")
-    log.info(f"  Log saved → reports/data_loading.log")
-    log.info("=" * 72)
+        log.info(f"  {tbl:<20}: {r:>12,} rows | {s:>8.2f}s | {rps:>12,.0f} rows/sec")
+    
+    log.info("")
+    log.info("OVERALL METRICS:")
+    log.info(f"  Total Execution Time : {total_elapsed:>8.2f} seconds")
+    log.info(f"  Total Rows Inserted  : {total_rows:>12,} rows")
+    log.info(f"  Overall Throughput   : {overall_rps:>12,.0f} rows/second")
+    log.info(f"  CSV Input Size       : {total_csv_size_gb:>12.2f} GB")
+    log.info(f"  Database Size (Disk) : {db_size_gb:>12.2f} GB")
+    log.info(f"  Compression Ratio    : {total_csv_size_gb/db_size_gb:>12.2f}x (CSV→DB)")
+    
+    log.info("")
+    log.info("SYSTEM METRICS:")
+    log.info(f"  Final CPU Usage      : {cpu_end:>12.1f}%")
+    log.info(f"  Final RAM Usage      : {ram_end:>12.1f}%")
+    log.info(f"  Log File             : reports/data_loading.log")
+    log.info("=" * 80)
 
-    print(f"\n  All data loaded successfully!")
-    print(f"  Total time : {total_elapsed:.1f}s")
+    print(f"\n  ✓ All data loaded successfully!")
+    print(f"  Total time : {total_elapsed:.2f}s")
     print(f"  Total rows : {total_rows:,}")
+    print(f"  Throughput : {overall_rps:,.0f} rows/sec")
+    print(f"  DB Size    : {db_size_gb:.2f} GB")
     print(f"  Log        : reports/data_loading.log")
 
 
