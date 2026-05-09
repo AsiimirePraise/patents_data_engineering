@@ -1,9 +1,5 @@
 -- =============================================================================
 -- Global Patent Intelligence Data Pipeline
--- queries.sql — 7 Required Queries + Visualisation Queries
--- =============================================================================
-
-
 -- ----------------------------------------------------------------------------
 -- Q1: Top Inventors — Who has the most patents?
 -- ----------------------------------------------------------------------------
@@ -77,9 +73,9 @@ SELECT
     p.title,
     p.filing_date,
     p.year,
-    i.name       AS inventor_name,
-    i.country    AS inventor_country,
-    c.name       AS company_name
+    i.name      AS inventor_name,
+    i.country   AS inventor_country,
+    c.name      AS company_name
 FROM patents p
 JOIN relationships  r ON p.patent_id   = r.patent_id
 JOIN inventors      i ON r.inventor_id = i.inventor_id
@@ -94,6 +90,7 @@ LIMIT 100;
 -- ----------------------------------------------------------------------------
 -- Q6_START
 WITH company_country_counts AS (
+    -- Step 1: count patents per company per country
     SELECT
         c.name  AS company_name,
         i.country,
@@ -106,6 +103,7 @@ WITH company_country_counts AS (
     GROUP BY c.name, i.country
 ),
 ranked AS (
+    -- Step 2: rank companies within each country
     SELECT
         company_name,
         country,
@@ -113,6 +111,7 @@ ranked AS (
         RANK() OVER (PARTITION BY country ORDER BY patent_count DESC) AS rnk
     FROM company_country_counts
 )
+-- Step 3: keep only top 3 companies per country
 SELECT
     country,
     company_name,
@@ -155,16 +154,12 @@ LIMIT 50;
 
 
 -- =============================================================================
--- VISUALISATION QUERIES
--- Used by visualisation.py — DO NOT rename the markers
+-- DIAGNOSTIC VISUALIZATIONS 
 -- =============================================================================
 
--- Chart 1: Top 20 Inventors by Patent Weight
+-- Chart 1: Inventor Weight Distribution (Top 20 by Patent Count)
 -- VIZ_CHART_1_START
-SELECT
-    i.name,
-    i.country,
-    COUNT(DISTINCT r.patent_id) AS patent_count
+SELECT i.name, i.country, COUNT(DISTINCT r.patent_id) AS patent_count
 FROM inventors i
 JOIN relationships r ON i.inventor_id = r.inventor_id
 GROUP BY i.inventor_id, i.name, i.country
@@ -172,69 +167,56 @@ ORDER BY patent_count DESC
 LIMIT 20;
 -- VIZ_CHART_1_END
 
-
--- Chart 2 Main: Lorenz curve data — patents per company
+-- Chart 2: Invention Concentration 
 -- VIZ_CHART_2_MAIN_START
-SELECT
-    c.name                      AS assignee,
-    COUNT(DISTINCT r.patent_id) AS patent_count
-FROM companies c
-JOIN relationships r ON c.company_id = r.company_id
-WHERE c.name IS NOT NULL
+SELECT c.name AS assignee, COUNT(DISTINCT r.patent_id) as patent_count
+FROM relationships r
+JOIN companies c ON r.company_id = c.company_id
 GROUP BY c.company_id, c.name
 ORDER BY patent_count DESC;
 -- VIZ_CHART_2_MAIN_END
 
-
--- Chart 2 Fallback: Lorenz curve — patents per inventor (if companies empty)
+-- Chart 2: Invention Concentration (Gini Coefficient) 
 -- VIZ_CHART_2_FALLBACK_START
-SELECT
-    i.name                      AS assignee,
-    COUNT(DISTINCT r.patent_id) AS patent_count
+SELECT i.name as assignee, COUNT(DISTINCT r.patent_id) as patent_count
 FROM inventors i
 JOIN relationships r ON i.inventor_id = r.inventor_id
-WHERE i.name IS NOT NULL
 GROUP BY i.inventor_id, i.name
 ORDER BY patent_count DESC;
 -- VIZ_CHART_2_FALLBACK_END
 
-
--- Chart 3: Patent Quality — Abstract Length Distribution
+-- Chart 3: Patent Quality Indicator (Abstract Length Distribution)
 -- VIZ_CHART_3_START
-SELECT
-    LENGTH(abstract) AS abstract_length,
-    COUNT(*)         AS count
+SELECT LENGTH(abstract) as abstract_length, COUNT(*) as count
 FROM patents
-WHERE abstract IS NOT NULL
-  AND abstract != ''
+WHERE abstract IS NOT NULL AND abstract != ''
 GROUP BY LENGTH(abstract)
-ORDER BY abstract_length;
+ORDER BY LENGTH(abstract);
 -- VIZ_CHART_3_END
 
-
--- Chart 4: Team Collaboration — Inventor Count per Patent
+-- Chart 4: Team Collaboration Patterns (Inventor Count Distribution)
 -- VIZ_CHART_4_START
-SELECT
-    patent_id,
-    COUNT(DISTINCT inventor_id) AS inventor_count
+SELECT patent_id, COUNT(DISTINCT inventor_id) as inventor_count
 FROM relationships
 GROUP BY patent_id;
 -- VIZ_CHART_4_END
 
-
 -- Chart 5: Inventor Type — Corporate vs Individual
+-- Uses POSITION() not LIKE/ILIKE — the % in LIKE/ILIKE patterns is
+-- misread as a psycopg2 parameter placeholder causing immutabledict crash.
 -- VIZ_CHART_5_START
 SELECT
     CASE
-        WHEN i.name ILIKE '%Inc%'
-          OR i.name ILIKE '%LLC%'
-          OR i.name ILIKE '%Corp%'
-          OR i.name ILIKE '%Ltd%'
-          OR i.name ILIKE '%Company%'
-          OR i.name ILIKE '%Co.%'
-          OR i.name ILIKE '%Technologies%'
-          OR i.name ILIKE '%Systems%'
-          OR i.name ILIKE '%Solutions%'
+        WHEN POSITION('inc'          IN LOWER(i.name)) > 0
+          OR POSITION('llc'          IN LOWER(i.name)) > 0
+          OR POSITION('corp'         IN LOWER(i.name)) > 0
+          OR POSITION('ltd'          IN LOWER(i.name)) > 0
+          OR POSITION('company'      IN LOWER(i.name)) > 0
+          OR POSITION('technologies' IN LOWER(i.name)) > 0
+          OR POSITION('systems'      IN LOWER(i.name)) > 0
+          OR POSITION('solutions'    IN LOWER(i.name)) > 0
+          OR POSITION('laboratory'   IN LOWER(i.name)) > 0
+          OR POSITION('institute'    IN LOWER(i.name)) > 0
           THEN 'Corporate Entity'
         ELSE 'Individual'
     END                         AS inventor_type,
@@ -244,14 +226,11 @@ JOIN relationships r ON i.inventor_id = r.inventor_id
 GROUP BY inventor_type;
 -- VIZ_CHART_5_END
 
-
--- Chart 6: Impact Trends — Patents per Decade (using year column)
+-- Chart 6: Impact Trends (Patents per Decade)
 -- VIZ_CHART_6_START
-SELECT
-    (year / 10) * 10 AS decade,
-    COUNT(*)         AS patent_count
+SELECT EXTRACT(DECADE FROM filing_date) as decade, COUNT(*) as patent_count
 FROM patents
-WHERE year IS NOT NULL
-GROUP BY (year / 10) * 10
+WHERE filing_date IS NOT NULL
+GROUP BY EXTRACT(DECADE FROM filing_date)
 ORDER BY decade;
 -- VIZ_CHART_6_END

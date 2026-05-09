@@ -1,8 +1,37 @@
-2026-05-07 08:11:50,618 - INFO - ================================================================================
-2026-05-07 08:11:50,619 - INFO - DIAGNOSTIC VISUALIZATIONS � STARTING
-2026-05-07 08:11:50,619 - INFO - ================================================================================
-2026-05-07 08:11:50,620 - INFO - Start Time: 2026-05-07T08:11:50.620139
-2026-05-07 08:11:50,620 - INFO - Memory at start: 0.11 GB
-2026-05-07 08:11:50,620 - INFO - CPU cores available: 4
-2026-05-07 08:11:50,769 - INFO - Database connected successfully
-2026-05-07 08:11:50,770 - INFO - [1/6] Starting - Inventor Weight Distribution
+2026-05-09 09:53:48 | INFO     | ========================================================================
+2026-05-09 09:53:48 | INFO     | DIAGNOSTIC VISUALISATIONS — STARTING
+2026-05-09 09:53:48 | INFO     | ========================================================================
+2026-05-09 09:53:48 | INFO     | Timestamp   : 2026-05-09 09:53:48
+2026-05-09 09:53:48 | INFO     | OS          : Windows 11
+2026-05-09 09:53:48 | INFO     | CPU cores   : 4
+2026-05-09 09:53:48 | INFO     | RAM total   : 25.6 GB
+2026-05-09 09:53:48 | INFO     | FORCE_RERUN : False
+2026-05-09 09:53:49 | INFO     | Database connected
+
+2026-05-09 09:53:49 | INFO     | [1/6] Inventor Weight Distribution (Top 20)...
+2026-05-09 09:53:49 | INFO     |   Skipping — already exists: reports/charts\01_inventor_weight_top20.png
+2026-05-09 09:53:50 | INFO     |   (set FORCE_RERUN=True to regenerate)
+2026-05-09 09:53:50 | INFO     | [2/6] Invention Concentration (Lorenz Curve / Gini)...
+2026-05-09 09:53:50 | INFO     |   Skipping — already exists: reports/charts\02_invention_concentration_gini.png
+2026-05-09 09:53:50 | INFO     |   (set FORCE_RERUN=True to regenerate)
+2026-05-09 09:53:50 | INFO     | [3/6] Patent Quality — Abstract Length Distribution...
+2026-05-09 09:53:50 | INFO     |   Skipping — already exists: reports/charts\03_patent_quality_abstract_length.png
+2026-05-09 09:53:50 | INFO     |   (set FORCE_RERUN=True to regenerate)
+2026-05-09 09:53:50 | INFO     | [4/6] Team Collaboration Patterns...
+2026-05-09 09:53:50 | INFO     |   Skipping — already exists: reports/charts\04_team_collaboration_patterns.png
+2026-05-09 09:53:50 | INFO     |   (set FORCE_RERUN=True to regenerate)
+2026-05-09 09:53:50 | INFO     | [5/6] Inventor Type — Corporate vs Individual...
+2026-05-09 10:12:58 | INFO     |   [5/6] saved → reports/charts\05_inventor_type_distribution.png | 1.04s | CPU 100.0% | RAM 72.5% | proc 0.14 GB
+2026-05-09 10:12:58 | INFO     |     rows: 2 | time: 1147.37s
+2026-05-09 10:12:58 | INFO     | [6/6] Impact Trends — Patents per Decade...
+2026-05-09 10:13:52 | INFO     |   [6/6] saved → reports/charts\06_impact_trends_over_decades.png | 1.50s | CPU 100.0% | RAM 71.2% | proc 0.15 GB
+2026-05-09 10:13:52 | INFO     |     rows: 6 | time: 54.73s
+2026-05-09 10:13:52 | INFO     | ========================================================================
+2026-05-09 10:13:52 | INFO     | VISUALISATIONS COMPLETE
+2026-05-09 10:13:52 | INFO     | ========================================================================
+2026-05-09 10:13:52 | INFO     | Total time  : 1204.3s
+2026-05-09 10:13:52 | INFO     | CPU at end  : 100.0%
+2026-05-09 10:13:52 | INFO     | RAM at end  : 71.2%
+2026-05-09 10:13:52 | INFO     | Process mem : 0.15 GB
+2026-05-09 10:13:52 | INFO     | Charts saved → reports/charts/
+2026-05-09 10:13:52 | INFO     | ========================================================================
