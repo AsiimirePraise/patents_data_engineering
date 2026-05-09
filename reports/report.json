@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-05 09:19:17.389858",
+  "generated_at": "2026-05-09 10:54:35.671566",
   "queries_run": [
     {
       "query": "Q7 \u2014 Ranking Query: Rank inventors (window functions)",
@@ -1034,6 +1034,240 @@
           "name": "Esmael Hejazi Dinan",
           "country": "US",
           "patent_count": 1915
+        }
+      ]
+    },
+    {
+      "query": "Q1 \u2014 Top Inventors: Who has the most patents?",
+      "run_at": "2026-05-09 10:31:50.592041",
+      "row_count": 20,
+      "results": [
+        {
+          "inventor_id": "fl:sh_ln:yamazaki-59",
+          "name": "Shunpei Yamazaki",
+          "country": "JP",
+          "patent_count": 6787
+        },
+        {
+          "inventor_id": "fl:ki_ln:silverbrook-1",
+          "name": "Kia Silverbrook",
+          "country": "AU",
+          "patent_count": 4778
+        },
+        {
+          "inventor_id": "fl:ta_ln:luo-5",
+          "name": "Tao Luo",
+          "country": "US",
+          "patent_count": 4490
+        },
+        {
+          "inventor_id": "fl:jo_ln:ive-4",
+          "name": "Jonathan P. Ive",
+          "country": "US",
+          "patent_count": 2947
+        },
+        {
+          "inventor_id": "fl:ju_ln:li-39",
+          "name": "Junyi Li",
+          "country": "US",
+          "patent_count": 2881
+        },
+        {
+          "inventor_id": "fl:ka_ln:cheng-84",
+          "name": "Kangguo Cheng",
+          "country": "US",
+          "patent_count": 2835
+        },
+        {
+          "inventor_id": "fl:fr_ln:shelton-6",
+          "name": "Frederick E. Shelton, IV",
+          "country": "US",
+          "patent_count": 2723
+        },
+        {
+          "inventor_id": "fl:pe_ln:gaal-1",
+          "name": "Peter Gaal",
+          "country": "US",
+          "patent_count": 2554
+        },
+        {
+          "inventor_id": "fl:du_ln:kerr-1",
+          "name": "Duncan Robert Kerr",
+          "country": "US",
+          "patent_count": 2534
+        },
+        {
+          "inventor_id": "fl:ba_ln:andre-6",
+          "name": "Bartley K. Andre",
+          "country": "US",
+          "patent_count": 2478
+        },
+        {
+          "inventor_id": "fl:ri_ln:howarth-2",
+          "name": "Richard P. Howarth",
+          "country": "US",
+          "patent_count": 2402
+        },
+        {
+          "inventor_id": "fl:wa_ln:chen-107",
+          "name": "Wanshi Chen",
+          "country": "US",
+          "patent_count": 2342
+        },
+        {
+          "inventor_id": "fl:eu_ln:whang-8",
+          "name": "Eugene Antony Whang",
+          "country": "US",
+          "patent_count": 2248
+        },
+        {
+          "inventor_id": "fl:xi_ln:zhang-212",
+          "name": "Xiaoxia Zhang",
+          "country": "US",
+          "patent_count": 2158
+        },
+        {
+          "inventor_id": "fl:pe_ln:russellclarke-2",
+          "name": "Peter Russell-Clarke",
+          "country": "US",
+          "patent_count": 2012
+        },
+        {
+          "inventor_id": "fl:ri_ln:zorkendorfer-1",
+          "name": "Rico Z\u00f6rkend\u00f6rfer",
+          "country": "US",
+          "patent_count": 1993
+        },
+        {
+          "inventor_id": "fl:ch_ln:yu-100",
+          "name": "Chen-Hua Yu",
+          "country": "TW",
+          "patent_count": 1981
+        },
+        {
+          "inventor_id": "fl:lo_ln:wood-12",
+          "name": "Lowell L. Wood, JR.",
+          "country": "US",
+          "patent_count": 1974
+        },
+        {
+          "inventor_id": "fl:ch_ln:stringer-4",
+          "name": "Christopher J. Stringer",
+          "country": "US",
+          "patent_count": 1918
+        },
+        {
+          "inventor_id": "fl:es_ln:dinan-2",
+          "name": "Esmael Hejazi Dinan",
+          "country": "US",
+          "patent_count": 1915
+        }
+      ]
+    },
+    {
+      "query": "Q2 \u2014 Top Companies: Which companies own the most?",
+      "run_at": "2026-05-09 10:54:35.669281",
+      "row_count": 20,
+      "results": [
+        {
+          "company_id": "533e0469-baac-46b7-9576-669db08092eb",
+          "name": "SAMSUNG DISPLAY CO., LTD.",
+          "patent_count": 174536
+        },
+        {
+          "company_id": "29b8f534-149e-443c-b76b-3c4a222da89c",
+          "name": "International Business Machines Corporation",
+          "patent_count": 164081
+        },
+        {
+          "company_id": "dfdf1f1a-8f22-41dc-a7f0-855bde20ca67",
+          "name": "CANON KABUSHIKI KAISHA",
+          "patent_count": 91328
+        },
+        {
+          "company_id": "55bc7465-2823-418d-9835-41d555c610a6",
+          "name": "SONY GROUP CORPORATION",
+          "patent_count": 62908
+        },
+        {
+          "company_id": "5952964e-63c6-4284-9012-0fdd0643f715",
+          "name": "Fujitsu Limited",
+          "patent_count": 56341
+        },
+        {
+          "company_id": "4ef2b9c8-d3e7-40d6-ac53-8694d8fe890f",
+          "name": "Kabushiki Kaisha Toshiba",
+          "patent_count": 53604
+        },
+        {
+          "company_id": "55715b8e-9037-47c9-8e27-a2acf13d6047",
+          "name": "Intel Corporation",
+          "patent_count": 53218
+        },
+        {
+          "company_id": "b904f566-62d6-44a5-8689-7b5c5a3a1a19",
+          "name": "General Electric Company",
+          "patent_count": 52040
+        },
+        {
+          "company_id": "906da649-dd98-4eac-a78c-d5dc3cc385b1",
+          "name": "LG ELECTRONICS INC.",
+          "patent_count": 50000
+        },
+        {
+          "company_id": "93f8c962-7a18-45c0-b192-7a141f9a8b6c",
+          "name": "HITACHI, LTD.",
+          "patent_count": 46073
+        },
+        {
+          "company_id": "74c11be2-20ec-49fe-ac26-d839d375bd32",
+          "name": "MITSUBISHI ELECTRIC CORPORATION",
+          "patent_count": 45738
+        },
+        {
+          "company_id": "f03635c8-6b6c-4f2b-bb6c-b52678f56aae",
+          "name": "QUALCOMM Incorporated",
+          "patent_count": 41723
+        },
+        {
+          "company_id": "88c962da-6df3-4f86-85ba-14c24c3cb600",
+          "name": "Taiwan Semiconductor Manufacturing Company, Ltd.",
+          "patent_count": 40871
+        },
+        {
+          "company_id": "87bbd77e-54e0-4d95-9c1b-7843963c09eb",
+          "name": "TOYOTA JIDOSHA KABUSHIKI KAISHA",
+          "patent_count": 39413
+        },
+        {
+          "company_id": "38cff6e0-fc52-4faf-9fa9-b72912600dee",
+          "name": "Apple Inc.",
+          "patent_count": 39060
+        },
+        {
+          "company_id": "77b0e539-7552-487c-8171-df9127f7fa66",
+          "name": "SUMITOMO ELECTRIC INDUSTRIES, LTD.",
+          "patent_count": 38355
+        },
+        {
+          "company_id": "e26f6502-4416-481e-b15a-e69178b15dfc",
+          "name": "Micron Technology, Inc.",
+          "patent_count": 38112
+        },
+        {
+          "company_id": "9971439c-aa8f-4cf2-b787-3b80dc992cfa",
+          "name": "NEC CORPORATION",
+          "patent_count": 36208
+        },
+        {
+          "company_id": "877b4262-7552-45e3-adc3-c484b3095cf3",
+          "name": "SEIKO EPSON CORPORATION",
+          "patent_count": 33863
+        },
+        {
+          "company_id": "7fd570bb-8d88-4ad9-832b-532add7b7500",
+          "name": "HONDA MOTOR CO., LTD.",
+          "patent_count": 32295
         }
       ]
     }

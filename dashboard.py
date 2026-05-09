@@ -195,75 +195,199 @@ with tab1:
 # TAB 2: NLP ABSTRACT SEARCH
 
 with tab2:
-    st.header("NLP-Powered Abstract Search")
-    st.markdown("Find patents using **semantic similarity** — powered by TF-IDF vectorization.")
+    st.header("🔍 NLP-Powered Patent Abstract Search")
+    st.markdown("""
+    **Find patents using semantic similarity** — powered by TF-IDF vectorization and cosine similarity.
+    
+    This search engine analyzes patent abstracts to find semantically similar documents, even if they 
+    don't use the exact same words. It uses machine learning to understand the meaning and context of your query.
+    """)
     
     if nlp_engine is None:
-        st.error("❌ NLP search engine not initialized. Abstracts may not be available.")
+        st.error("NLP search engine not initialized. Please ensure abstracts are available in the database.")
+        st.info("Try running: `python visualisation.py` to regenerate data.")
     else:
-        col1, col2 = st.columns([3, 1])
+        # Display NLP Engine Stats
+        st.markdown("### Search Engine Statistics")
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric("Patents Indexed", f"{len(nlp_engine['patent_ids']):,}")
+        col2.metric("TF-IDF Features", "3,000")
+        col3.metric("N-gram Range", "1-2")
+        col4.metric("Stop Words", "English")
+        
+        st.divider()
+        
+        # Search Interface
+        st.markdown("### Enter Your Search Query")
+        col1, col2, col3 = st.columns([2, 1, 1])
+        
         with col1:
             search_query = st.text_input(
-                "Enter search query:",
-                placeholder="e.g., 'machine learning', 'blockchain', 'artificial intelligence'"
+                "Search Query:",
+                placeholder="e.g., 'machine learning', 'blockchain', 'artificial intelligence', 'quantum computing'",
+                label_visibility="collapsed"
             )
-        with col2:
-            top_k = st.number_input("Top Results:", value=10, min_value=1, max_value=50, step=1)
         
-        if search_query:
-            with st.spinner("Searching through abstracts..."):
-                # Vectorize query
-                query_vector = nlp_engine['vectorizer'].transform([search_query])
-                
-                # Compute similarities
-                similarities = cosine_similarity(query_vector, nlp_engine['tfidf_matrix']).flatten()
-                
-                # Get top results
-                top_indices = np.argsort(similarities)[::-1][:top_k]
-                
-                results = []
-                for idx in top_indices:
-                    score = float(similarities[idx])
-                    if score > 0.05:
-                        results.append({
-                            'Patent ID': nlp_engine['patent_ids'][idx],
-                            'Relevance Score': round(score, 4)
-                        })
-                
-                if results:
-                    st.markdown(f"**Found {len(results)} Relevant Patents**")
-                    results_df = pd.DataFrame(results)
-                    st.dataframe(
-                        results_df,
-                        use_container_width=True,
-                        hide_index=True,
-                        column_config={
-                            "Patent ID": st.column_config.TextColumn(width="large"),
-                            "Relevance Score": st.column_config.ProgressColumn(
-                                "Relevance Score",
-                                min_value=0.0,
-                                max_value=1.0,
-                                format="%.4f"
-                            )
-                        }
-                    )
+        with col2:
+            top_k = st.number_input("Top Results:", value=15, min_value=1, max_value=100, step=5)
+        
+        with col3:
+            similarity_threshold = st.slider("Min Similarity:", 0.0, 1.0, 0.05, 0.01)
+        
+        if search_query and len(search_query.strip()) > 0:
+            with st.spinner("🔄 Searching through 50,000+ patent abstracts..."):
+                try:
+                    # Vectorize query
+                    query_vector = nlp_engine['vectorizer'].transform([search_query])
                     
-                    st.divider()
+                    # Compute similarities (cosine similarity measures angle between vectors)
+                    similarities = cosine_similarity(query_vector, nlp_engine['tfidf_matrix']).flatten()
                     
-                    if st.button("View Full Abstracts"):
-                        st.markdown("### Patent Abstracts (First 5 Results)")
-                        for idx, result in enumerate(results[:5], 1):
+                    # Get top results
+                    top_indices = np.argsort(similarities)[::-1][:top_k]
+                    
+                    # Filter by similarity threshold
+                    results = []
+                    query_terms = search_query.lower().split()
+                    
+                    for idx in top_indices:
+                        score = float(similarities[idx])
+                        if score > similarity_threshold:
+                            patent_id = nlp_engine['patent_ids'][idx]
+                            abstract = nlp_engine['abstracts'][idx]
+                            results.append({
+                                'Patent ID': patent_id,
+                                'Similarity Score': round(score, 4),
+                                'Abstract Preview': abstract[:150] + "..." if len(abstract) > 150 else abstract
+                            })
+                    
+                    if results:
+                        st.success(f" Found **{len(results)}** relevant patents")
+                        
+                        # Display results table
+                        st.markdown("### Top Matching Patents")
+                        results_df = pd.DataFrame(results)
+                        
+                        st.dataframe(
+                            results_df,
+                            use_container_width=True,
+                            hide_index=True,
+                            column_config={
+                                "Patent ID": st.column_config.TextColumn(width="medium"),
+                                "Similarity Score": st.column_config.ProgressColumn(
+                                    "Similarity Score",
+                                    min_value=0.0,
+                                    max_value=1.0,
+                                    format="%.4f"
+                                ),
+                                "Abstract Preview": st.column_config.TextColumn(width="large")
+                            }
+                        )
+                        
+                        # Export results
+                        csv_export = results_df.to_csv(index=False).encode("utf-8")
+                        st.download_button(
+                            label="⬇️ Download Results as CSV",
+                            data=csv_export,
+                            file_name=f"nlp_search_results_{search_query.replace(' ', '_')}.csv",
+                            mime="text/csv"
+                        )
+                        
+                        st.divider()
+                        
+                        # View Full Abstracts
+                        st.markdown("### Detailed Patent Information")
+                        view_count = st.selectbox(
+                            "How many full abstracts to display?",
+                            [5, 10, 20],
+                            index=0
+                        )
+                        
+                        for idx, result in enumerate(results[:view_count], 1):
                             patent_id = result['Patent ID']
-                            score = result['Relevance Score']
-                            abstract_row = nlp_engine['df'][nlp_engine['df']['patent_id'] == patent_id]
-                            if not abstract_row.empty:
-                                with st.expander(f"#{idx} — Patent {patent_id} (Relevance: {score:.4f})"):
-                                    abstract_text = abstract_row['abstract'].values[0]
-                                    st.markdown(f"{abstract_text}")
-                else:
-                    st.info("No relevant results found. Try different keywords!")
+                            score = result['Similarity Score']
+                            
+                            # Fetch full patent details
+                            patent_row = nlp_engine['df'][nlp_engine['df']['patent_id'] == patent_id]
+                            if not patent_row.empty:
+                                abstract_text = patent_row['abstract'].values[0]
+                                
+                                with st.expander(
+                                    f"#{idx} — **{patent_id}** (Relevance: {score:.4f}) — Click to expand"
+                                ):
+                                    col_score, col_details = st.columns([1, 3])
+                                    
+                                    with col_score:
+                                        st.metric("Similarity Score", f"{score:.4f}")
+                                        # Show relevance level
+                                        if score > 0.5:
+                                            st.success("🟢 Highly Relevant")
+                                        elif score > 0.25:
+                                            st.info("🟡 Moderately Relevant")
+                                        else:
+                                            st.warning("🟠 Weakly Relevant")
+                                    
+                                    with col_details:
+                                        st.markdown("**Full Abstract:**")
+                                        st.markdown(abstract_text)
+                        
+                        st.divider()
+                        
+                        # Search Statistics
+                        st.markdown("### Search Statistics")
+                        stat_col1, stat_col2, stat_col3, stat_col4 = st.columns(4)
+                        
+                        avg_score = np.mean([r['Similarity Score'] for r in results])
+                        max_score = np.max([r['Similarity Score'] for r in results])
+                        min_score = np.min([r['Similarity Score'] for r in results])
+                        
+                        stat_col1.metric("Average Score", f"{avg_score:.4f}")
+                        stat_col2.metric("Max Score", f"{max_score:.4f}")
+                        stat_col3.metric("Min Score", f"{min_score:.4f}")
+                        stat_col4.metric("Query Terms", len(query_terms))
+                        
+                        # Score distribution
+                        st.markdown("### Relevance Score Distribution")
+                        scores = [r['Similarity Score'] for r in results]
+                        score_df = pd.DataFrame({
+                            'Score Range': ['0.0-0.1', '0.1-0.2', '0.2-0.3', '0.3-0.4', '0.4-0.5', '0.5+'],
+                            'Count': [
+                                sum(1 for s in scores if 0.0 <= s < 0.1),
+                                sum(1 for s in scores if 0.1 <= s < 0.2),
+                                sum(1 for s in scores if 0.2 <= s < 0.3),
+                                sum(1 for s in scores if 0.3 <= s < 0.4),
+                                sum(1 for s in scores if 0.4 <= s < 0.5),
+                                sum(1 for s in scores if s >= 0.5),
+                            ]
+                        })
+                        st.bar_chart(score_df.set_index('Score Range')['Count'])
+                    
+                    else:
+                        st.warning(
+                            f"No patents found with similarity > {similarity_threshold}. "
+                            f"Try lowering the threshold or using different keywords."
+                        )
+                
+                except Exception as e:
+                    st.error(f"Search error: {str(e)}")
+                    st.info("Try using simpler keywords or check the database connection.")
+        
         else:
-            st.info("💡 Enter a search query above to find patents by abstract content.")
+            st.info(
+                """
+                 **How to use this search:**
+                1. Enter keywords or phrases related to patents you're looking for
+                2. Adjust the number of results and similarity threshold
+                3. Click on a result to expand and view the full abstract
+                4. Download results as CSV for further analysis
+                
+                **Example searches:**
+                - 'artificial intelligence deep learning'
+                - 'renewable energy solar'
+                - 'biotechnology protein'
+                - 'semiconductor chip design'
+                """
+            )
 
 
 
